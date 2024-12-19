@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 
 import { routes } from '@/navigation/routes.tsx';
 import BottomNavBar from '@/components/BottomNavBar';
+import GameProvider from '@/components/Game/context/game-context';
 
 export function App() {
   const lp = useLaunchParams();
@@ -16,13 +17,15 @@ export function App() {
       platform={['macos', 'ios'].includes(lp.platform) ? 'ios' : 'base'}
     >
       <HashRouter>
-        <Box sx={{ pb: 7 }}> {/* Add padding bottom to account for navigation bar */}
-          <Routes>
-            {routes.map((route) => <Route key={route.path} {...route} />)}
-            <Route path="/" element={<Navigate to="/game"/>}/>
-            <Route path="*" element={<Navigate to="/game"/>}/>
-          </Routes>
-        </Box>
+        <GameProvider>
+          <Box sx={{ pb: 7 }}> {/* Add padding bottom to account for navigation bar */}
+            <Routes>
+              {routes.map((route) => <Route key={route.path} {...route} />)}
+              <Route path="/" element={<Navigate to="/game" />} />
+              <Route path="*" element={<Navigate to="/game" />} />
+            </Routes>
+          </Box>
+        </GameProvider>
         <BottomNavBar />
       </HashRouter>
     </AppRoot>
