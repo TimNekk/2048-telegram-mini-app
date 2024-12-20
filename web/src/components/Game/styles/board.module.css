@@ -6,8 +6,8 @@
 .grid {
   display: flex;
   flex-wrap: wrap;
-  background: var(--secondary-background);
-  border: calc(var(--pixel-size) * 0.5) solid var(--secondary-background);
+  background: var(--tg-theme-bg-color);
+  border: calc(var(--pixel-size) * 0.5) solid var(--tg-theme-bg-color);
   border-radius: calc(var(--pixel-size) * 0.75);
 }
 
@@ -16,7 +16,7 @@
   height: calc(var(--pixel-size) * 8);
   margin: calc(var(--pixel-size) * 0.5);
   border-radius: calc(var(--pixel-size) * 0.5);
-  background: var(--cell-background);
+  background: var(--tg-theme-secondary-bg-color);
 }
 
 .tiles {
@@ -35,7 +35,7 @@
   }
 
   .grid {
-    border: calc(var(--pixel-size) * 1) solid var(--secondary-background);
+    border: calc(var(--pixel-size) * 1) solid var(--tg-theme-bg-color);
   }
 
   .cell {
