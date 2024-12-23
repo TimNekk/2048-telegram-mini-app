@@ -85,10 +85,10 @@ export default function Board() {
   }, [handleKeyDown]);
 
   return (
-    <MobileSwiper onSwipe={handleSwipe}>
+    <MobileSwiper onSwipe={handleSwipe} disabled={status === "won" || status === "lost"}>
       <div className={styles.board}>
-        {status === "won" && <Splash heading="You won!" type="won" />}
-        {status === "lost" && <Splash heading="You lost!" />}
+        {status === "won" && <Splash heading="Победа!" />}
+        {status === "lost" && <Splash heading="Игра окончена" />}
         <div className={styles.tiles}>{renderTiles()}</div>
         <div className={styles.grid}>{renderGrid()}</div>
       </div>
