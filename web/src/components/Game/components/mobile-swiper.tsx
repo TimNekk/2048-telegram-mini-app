@@ -10,15 +10,16 @@ export type SwipeInput = { deltaX: number; deltaY: number };
 
 type MobileSwiperProps = PropsWithChildren<{
   onSwipe: (_: SwipeInput) => void;
+  disabled?: boolean;
 }>;
 
-export default function MobileSwiper({ children, onSwipe }: MobileSwiperProps) {
+export default function MobileSwiper({ children, onSwipe, disabled }: MobileSwiperProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
-    if (!wrapperRef.current?.contains(e.target as Node)) {
+    if (disabled || !wrapperRef.current?.contains(e.target as Node)) {
       return;
     }
 
@@ -26,11 +27,11 @@ export default function MobileSwiper({ children, onSwipe }: MobileSwiperProps) {
 
     setStartX(e.touches[0].clientX);
     setStartY(e.touches[0].clientY);
-  }, []);
+  }, [disabled]);
 
   const handleTouchEnd = useCallback(
     (e: TouchEvent) => {
-      if (!wrapperRef.current?.contains(e.target as Node)) {
+      if (disabled || !wrapperRef.current?.contains(e.target as Node)) {
         return;
       }
 
@@ -46,7 +47,7 @@ export default function MobileSwiper({ children, onSwipe }: MobileSwiperProps) {
       setStartX(0);
       setStartY(0);
     },
-    [startX, startY, onSwipe],
+    [startX, startY, onSwipe, disabled],
   );
 
   useEffect(() => {
