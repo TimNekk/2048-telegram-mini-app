@@ -12,7 +12,6 @@ export default function Board() {
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      // disables page scrolling with keyboard arrows
       e.preventDefault();
 
       switch (e.code) {
@@ -71,10 +70,12 @@ export default function Board() {
 
   useEffect(() => {
     if (initialized.current === false) {
-      startGame();
+      if (getTiles().length === 0) {
+        startGame();
+      }
       initialized.current = true;
     }
-  }, [startGame]);
+  }, [startGame, getTiles]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);

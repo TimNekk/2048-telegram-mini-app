@@ -25,7 +25,33 @@ export const GameContext = createContext({
 });
 
 export default function GameProvider({ children }: PropsWithChildren) {
-  const [gameState, dispatch] = useReducer(gameReducer, initialState);
+  const loadSavedState = () => {
+    try {
+      const savedState = localStorage.getItem('gameState');
+      if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        if (parsedState.tilesByIds.length > 0) {
+          return {
+            ...parsedState,
+            board: parsedState.board.map((row: any) => [...row]),
+            tiles: Object.fromEntries(
+              Object.entries(parsedState.tiles).map(([id, tile]: [string, any]) => [
+                id,
+                { ...tile }
+              ])
+            ),
+            tilesByIds: [...parsedState.tilesByIds],
+            hasChanged: false
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Error loading saved state:', error);
+    }
+    return initialState;
+  };
+
+  const [gameState, dispatch] = useReducer(gameReducer, loadSavedState());
 
   const getEmptyCells = () => {
     const results: [number, number][] = [];
@@ -71,22 +97,6 @@ export default function GameProvider({ children }: PropsWithChildren) {
     dispatch({ type: "reset_game" });
     appendRandomTile();
     appendRandomTile();
-    // dispatch({ type: "create_tile", tile: { position: [0, 0], value: 2 } });
-    // dispatch({ type: "create_tile", tile: { position: [0, 1], value: 4 } });
-    // dispatch({ type: "create_tile", tile: { position: [0, 2], value: 8 } });
-    // dispatch({ type: "create_tile", tile: { position: [0, 3], value: 16 } });
-    // dispatch({ type: "create_tile", tile: { position: [1, 3], value: 32 } });
-    // dispatch({ type: "create_tile", tile: { position: [1, 2], value: 64 } });
-    // dispatch({ type: "create_tile", tile: { position: [1, 1], value: 128 } });
-    // dispatch({ type: "create_tile", tile: { position: [1, 0], value: 256 } });
-    // dispatch({ type: "create_tile", tile: { position: [2, 0], value: 512 } });
-    // dispatch({ type: "create_tile", tile: { position: [2, 1], value: 1024 } });
-    // dispatch({ type: "create_tile", tile: { position: [2, 2], value: 2048 } });
-    // dispatch({ type: "create_tile", tile: { position: [2, 3], value: 4096 } });
-    // dispatch({ type: "create_tile", tile: { position: [3, 3], value: 8192 } });
-    // dispatch({ type: "create_tile", tile: { position: [3, 2], value: 16384 } });
-    // dispatch({ type: "create_tile", tile: { position: [3, 1], value: 32768 } });
-    // dispatch({ type: "create_tile", tile: { position: [3, 0], value: 65536 } });
   };
 
   const checkGameState = () => {
@@ -145,6 +155,23 @@ export default function GameProvider({ children }: PropsWithChildren) {
       checkGameState();
     }
   }, [gameState.hasChanged]);
+
+  useEffect(() => {
+    try {
+      if (gameState.tilesByIds.length > 0) {
+        localStorage.setItem('gameState', JSON.stringify(gameState));
+      }
+    } catch (error) {
+      console.error('Error saving state:', error);
+    }
+  }, [gameState]);
+
+  useEffect(() => {
+    const savedState = localStorage.getItem('gameState');
+    if (!savedState || JSON.parse(savedState).tilesByIds.length === 0) {
+      startGame();
+    }
+  }, []); 
 
   return (
     <GameContext.Provider
