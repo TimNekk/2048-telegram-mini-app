@@ -1,19 +1,48 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
 import Score from '@/components/Game/components/score';
-import styles from "@/components/Game/styles/index.module.css";
 import Board from '@/components/Game/components/board';
 import "@/components/Game/styles/globals.css";
+import { List } from '@telegram-apps/telegram-ui';
+import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 
 const GamePage: React.FC = () => {
   return (
-    <div className={styles.twenty48}>
-      <Typography variant="h5" component="h1" gutterBottom>
-        2048
-      </Typography>
+    <List>
+      <SectionHeader large>
+        2048 от Магнит Маркета
+      </SectionHeader>
       <Score />
-      <Board />
-    </div>
+
+      <div
+        style={{
+          marginTop: '1em',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+        <Board />
+      </div>
+    </List>
+    // </div>
+
+    // <List>
+    //   <Section header="Header for the section" footer="Footer for the section">
+    //     <Cell key={1}>
+    //       123
+    //     </Cell>
+    //     <Cell key={1}>
+    //       321
+    //     </Cell>
+    //   </Section>
+    //   <Section header="Header for the section" footer="Footer for the section">
+    //     <Cell key={1}>
+    //       123
+    //     </Cell>
+    //     <Cell key={1}>
+    //       321
+    //     </Cell>
+    //   </Section>
+    // </List>
   );
 };
 
