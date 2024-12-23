@@ -4,41 +4,31 @@ import { Box, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { miniApp } from '@telegram-apps/sdk-react';
+import { Tabbar } from '@telegram-apps/telegram-ui';
 
 const BottomNavBar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   return (
-    <Box sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
-      <BottomNavigation
-        value={location.pathname}
-        onChange={(_, newValue) => {
-          navigate(newValue);
-        }}
-        sx={{ 
-          borderTop: `1px solid var(--tg-theme-hint-color)`,
-          backgroundColor: 'var(--tg-theme-bg-color)',
-          '& .MuiBottomNavigationAction-root': {
-            color: 'var(--tg-theme-hint-color)',
-            '&.Mui-selected': {
-              color: 'var(--tg-theme-button-color)',
-            },
-          },
-        }}
+    <Tabbar>
+      <Tabbar.Item
+        key={'/game'}
+        text="Играть"
+        selected={location.pathname === '/game'}
+        onClick={() => navigate('/game')}
       >
-        <BottomNavigationAction
-          label="Игра"
-          value="/game"
-          icon={<VideogameAssetIcon />}
-        />
-        <BottomNavigationAction
-          label="Призы"
-          value="/prizes"
-          icon={<EmojiEventsIcon />}
-        />
-      </BottomNavigation>
-    </Box>
+        <VideogameAssetIcon />
+      </Tabbar.Item>
+      <Tabbar.Item
+        key={'/prizes'}
+        text="Призы"
+        selected={location.pathname === '/prizes'}
+        onClick={() => navigate('/prizes')}
+      >
+        <EmojiEventsIcon />
+      </Tabbar.Item>
+    </Tabbar>
   );
 };
 
