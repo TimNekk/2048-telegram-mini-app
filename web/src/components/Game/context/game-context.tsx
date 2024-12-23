@@ -19,9 +19,9 @@ type MoveDirection = "move_up" | "move_down" | "move_left" | "move_right";
 export const GameContext = createContext({
   score: 0,
   status: "ongoing",
-  moveTiles: (_: MoveDirection) => {},
+  moveTiles: (_: MoveDirection) => { },
   getTiles: () => [] as Tile[],
-  startGame: () => {},
+  startGame: () => { },
 });
 
 export default function GameProvider({ children }: PropsWithChildren) {
@@ -46,14 +46,16 @@ export default function GameProvider({ children }: PropsWithChildren) {
       const cellIndex = Math.floor(Math.random() * emptyCells.length);
       const newTile = {
         position: emptyCells[cellIndex],
-        value: 2,
+        value: Math.random() < 0.9 ? 2 : 4,
       };
       dispatch({ type: "create_tile", tile: newTile });
     }
   };
 
   const getTiles = () => {
-    return gameState.tilesByIds.map((tileId) => gameState.tiles[tileId]);
+    return gameState.tilesByIds
+      .map((tileId) => gameState.tiles[tileId])
+      .filter((tile) => tile !== undefined);
   };
 
   const moveTiles = useCallback(
@@ -67,8 +69,8 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
   const startGame = () => {
     dispatch({ type: "reset_game" });
-    dispatch({ type: "create_tile", tile: { position: [0, 1], value: 2 } });
-    dispatch({ type: "create_tile", tile: { position: [0, 2], value: 2 } });
+    appendRandomTile();
+    appendRandomTile();
     // dispatch({ type: "create_tile", tile: { position: [0, 0], value: 2 } });
     // dispatch({ type: "create_tile", tile: { position: [0, 1], value: 4 } });
     // dispatch({ type: "create_tile", tile: { position: [0, 2], value: 8 } });
@@ -99,23 +101,29 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
     const { tiles, board } = gameState;
 
-    const maxIndex = tileCountPerDimension - 1;
-    for (let x = 0; x < maxIndex; x += 1) {
-      for (let y = 0; y < maxIndex; y += 1) {
-        if (
-          isNil(gameState.board[x][y]) ||
-          isNil(gameState.board[x + 1][y]) ||
-          isNil(gameState.board[x][y + 1])
-        ) {
-          return;
+    // Check for empty cells
+    for (let y = 0; y < tileCountPerDimension; y++) {
+      for (let x = 0; x < tileCountPerDimension; x++) {
+        if (isNil(board[y][x])) {
+          return; // Game not over, empty cell found
         }
+      }
+    }
 
-        if (tiles[board[x][y]].value === tiles[board[x + 1][y]].value) {
-          return;
+    // Check for possible merges horizontally
+    for (let y = 0; y < tileCountPerDimension; y++) {
+      for (let x = 0; x < tileCountPerDimension - 1; x++) {
+        if (tiles[board[y][x]].value === tiles[board[y][x + 1]].value) {
+          return; // Game not over, horizontal merge possible
         }
+      }
+    }
 
-        if (tiles[board[x][y]].value === tiles[board[x][y + 1]].value) {
-          return;
+    // Check for possible merges vertically
+    for (let y = 0; y < tileCountPerDimension - 1; y++) {
+      for (let x = 0; x < tileCountPerDimension; x++) {
+        if (tiles[board[y][x]].value === tiles[board[y + 1][x]].value) {
+          return; // Game not over, vertical merge possible
         }
       }
     }
