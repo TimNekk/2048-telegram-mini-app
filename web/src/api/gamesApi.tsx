@@ -9,7 +9,7 @@ export const startNewGame = async () => {
     return response.data;
 }
 
-export const updateGame = async (game: any) => {
-    const response = await gamesApi.patch(`${gamesUrlEndpoint}/${game.id}`, game);
+export const updateGame = async (gameId: string, game: any) => {
+    const response = await gamesApi.patch(`${gamesUrlEndpoint}/${gameId}`, game);
     return response.data;
 }

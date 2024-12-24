@@ -25,6 +25,7 @@ import {
 export const GameContext = createContext({
   score: 0,
   status: "ongoing",
+  gameId: undefined as string | undefined,
   moveTiles: (_: MoveDirection) => { },
   getTiles: () => [] as Tile[],
   startGame: () => { },
@@ -105,12 +106,12 @@ export default function GameProvider({ children }: PropsWithChildren) {
         return initializationPromise.current;
       }
 
-      console.log("start")
       initializationPromise.current = (async () => {
         try {
-          await startNewGame();
+          const newGame = await startNewGame();
           dispatch({ type: "reset_game" });
           dispatch({ type: "update_status", status: "ongoing" });
+          dispatch({ type: "set_game_id", gameId: newGame.game.id });
         } catch (error) {
           console.error('Error starting new game:', error);
           // Still start the game locally even if API call fails
@@ -155,6 +156,23 @@ export default function GameProvider({ children }: PropsWithChildren) {
       }
     }, [gameState.hasChanged]);
 
+    // Save game state to localStorage
+    useEffect(() => {
+      localStorage.setItem('gameState', JSON.stringify(gameState));
+    }, [gameState]);
+
+    // Handle game over and update score
+    useEffect(() => {
+      if (gameState.status === "lost" && gameState.gameId) {
+        updateGame(gameState.gameId, {
+          status: "finished",
+          score: gameState.score
+        }).catch(error => {
+          console.error('Error updating game score:', error);
+        });
+      }
+    }, [gameState.status, gameState.gameId, gameState.score]);
+
     const checkGameState = () => {
       const isWon =
         Object.values(gameState.tiles).filter((t) => t.value === gameWinTileValue)
@@ -197,21 +215,12 @@ export default function GameProvider({ children }: PropsWithChildren) {
       dispatch({ type: "update_status", status: "lost" });
     };
 
-    useEffect(() => {
-      try {
-        if (gameState.tilesByIds.length > 0) {
-          localStorage.setItem('gameState', JSON.stringify(gameState));
-        }
-      } catch (error) {
-        console.error('Error saving state:', error);
-      }
-    }, [gameState]);
-
     return (
       <GameContext.Provider
         value={{
           score: gameState.score,
           status: gameState.status,
+          gameId: gameState.gameId,
           getTiles,
           moveTiles,
           startGame,

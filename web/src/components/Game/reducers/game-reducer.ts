@@ -12,7 +12,9 @@ type State = {
   hasChanged: boolean;
   score: number;
   status: GameStatus;
+  gameId?: string;
 };
+
 type Action =
   | { type: "create_tile"; tile: Tile }
   | { type: "clean_up" }
@@ -21,7 +23,8 @@ type Action =
   | { type: "move_left" }
   | { type: "move_right" }
   | { type: "reset_game" }
-  | { type: "update_status"; status: GameStatus };
+  | { type: "update_status"; status: GameStatus }
+  | { type: "set_game_id"; gameId: string };
 
 function createBoard() {
   const board: string[][] = [];
@@ -40,6 +43,7 @@ export const initialState: State = {
   hasChanged: false,
   score: 0,
   status: "init",
+  gameId: undefined,
 };
 
 export default function gameReducer(
@@ -299,6 +303,11 @@ export default function gameReducer(
       return {
         ...state,
         status: action.status,
+      };
+    case "set_game_id":
+      return {
+        ...state,
+        gameId: action.gameId,
       };
     default:
       return state;
