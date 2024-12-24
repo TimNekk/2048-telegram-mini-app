@@ -5,13 +5,8 @@ import "@/components/Game/styles/globals.css";
 import { List } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { Page } from '@/components/Page';
-import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 
 const GamePage: React.FC = () => {
-  const { initDataRaw } = retrieveLaunchParams()
-
-  console.log(`tma ${initDataRaw}`)
-
   return (
     <Page back={false}>
       <List>
