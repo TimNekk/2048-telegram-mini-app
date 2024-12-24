@@ -5,8 +5,13 @@ import "@/components/Game/styles/globals.css";
 import { List } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { Page } from '@/components/Page';
+import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 
 const GamePage: React.FC = () => {
+  const { initDataRaw } = retrieveLaunchParams()
+
+  console.log(`tma ${initDataRaw}`)
+
   return (
     <Page back={false}>
       <List>
@@ -26,26 +31,6 @@ const GamePage: React.FC = () => {
         </div>
       </List>
     </Page>
-    // </div>
-
-    // <List>
-    //   <Section header="Header for the section" footer="Footer for the section">
-    //     <Cell key={1}>
-    //       123
-    //     </Cell>
-    //     <Cell key={1}>
-    //       321
-    //     </Cell>
-    //   </Section>
-    //   <Section header="Header for the section" footer="Footer for the section">
-    //     <Cell key={1}>
-    //       123
-    //     </Cell>
-    //     <Cell key={1}>
-    //       321
-    //     </Cell>
-    //   </Section>
-    // </List>
   );
 };
 
