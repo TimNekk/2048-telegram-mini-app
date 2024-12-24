@@ -3,7 +3,7 @@ import { uid } from "uid";
 import { tileCountPerDimension } from "@/components/Game/constants";
 import { Tile, TileMap } from "@/components/Game/models/tile";
 
-type GameStatus = "ongoing" | "won" | "lost";
+type GameStatus = "ongoing" | "won" | "lost" | "init";
 
 type State = {
   board: string[][];
@@ -39,7 +39,7 @@ export const initialState: State = {
   tilesByIds: [],
   hasChanged: false,
   score: 0,
-  status: "ongoing",
+  status: "init",
 };
 
 export default function gameReducer(

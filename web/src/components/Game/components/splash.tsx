@@ -6,13 +6,17 @@ import { useContext } from "react";
 export default function Splash({ heading = "You won!" }) {
   const { startGame } = useContext(GameContext);
 
+  const handleStartGame = () => {
+    void startGame();
+  };
+
   return (
     <div className={`${styles.splash}`}>
       <List>
         <LargeTitle weight="1">
           {heading}
         </LargeTitle>
-        <Button onClick={startGame}>
+        <Button onClick={handleStartGame}>
           Сыграть ещё раз
         </Button>
       </List>
