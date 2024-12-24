@@ -1,0 +1,22 @@
+meta {
+  name: Update Score
+  type: http
+  seq: 2
+}
+
+patch {
+  url: http://localhost:8080/games/:id
+  body: json
+  auth: none
+}
+
+params:path {
+  id: 1
+}
+
+body:json {
+  {
+    "score": 1001,
+    "status": "finished"
+  }
+}
