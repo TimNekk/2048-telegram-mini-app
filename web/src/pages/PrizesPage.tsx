@@ -7,11 +7,26 @@ import { Button, Cell, List, Section, Timeline } from '@telegram-apps/telegram-u
 import { TimelineItem } from '@telegram-apps/telegram-ui/dist/components/Blocks/Timeline/components/TimelineItem/TimelineItem';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { Stack } from '@mui/material';
+import { hapticFeedback } from '@telegram-apps/sdk-react';
 
 const PrizesPage: React.FC = () => {
+
+
   return (
     <Page>
       <List>
+        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('light');}}>impect light</Button>
+        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('medium');}}>impect medium</Button>
+        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('heavy');}}>impect heavy</Button>
+        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('rigid');}}>impect rigid</Button>
+        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('soft');}}>impect soft</Button>
+
+        <Button onClick={() => {if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('error');}}>notification error</Button>
+        <Button onClick={() => {if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('success');}}>notification success</Button>
+        <Button onClick={() => {if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('warning');}}>notification warning</Button>
+
+        <Button onClick={() => {if (hapticFeedback.selectionChanged.isAvailable()) hapticFeedback.selectionChanged();}}>selection</Button>
+
         <SectionHeader large>
           Призы
         </SectionHeader>
