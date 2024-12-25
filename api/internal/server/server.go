@@ -22,15 +22,14 @@ type Server struct {
 }
 
 func NewServer() *http.Server {
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	db := database.New()
-	
+
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db.GetDB())
 	gameRepo := repository.NewGameRepository(db.GetDB())
-	
+
 	server := &Server{
-		port:        port,
+		port:        8080,
 		botToken:    os.Getenv("BOT_TOKEN"),
 		db:          db,
 		gameHandler: handler.NewGameHandler(userRepo, gameRepo),
