@@ -38,6 +38,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     restart: unless-stopped
+    expose:
+      - 5432
     networks:
       - dokploy-network
     volumes:
