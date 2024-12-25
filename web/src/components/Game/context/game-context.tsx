@@ -14,6 +14,7 @@ import {
 } from "@/components/Game/constants";
 import { Tile } from "@/components/Game/models/tile";
 import gameReducer, { initialState } from "@/components/Game/reducers/game-reducer";
+import { hapticFeedback } from '@telegram-apps/sdk';
 
 type MoveDirection = "move_up" | "move_down" | "move_left" | "move_right";
 
@@ -94,7 +95,12 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
   const moveTiles = useCallback(
     throttle(
-      (type: MoveDirection) => dispatch({ type }),
+      (type: MoveDirection) => {
+        if (hapticFeedback.impactOccurred.isAvailable()) {
+          hapticFeedback.impactOccurred('medium');
+        }
+        dispatch({ type });
+      },
       mergeAnimationDuration * 1.05,
       { trailing: false },
     ),
