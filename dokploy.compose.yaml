@@ -13,7 +13,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.frontend-app.rule=Host(`frontend.mmtgame.ru`)
-      - traefik.http.routers.frontend-app.entrypoints=web
+      - traefik.http.routers.frontend-app.entrypoints=websecure
+      - traefik.http.routers.frontend-app.tls.certResolver=letsencrypt
       - traefik.http.services.frontend-app.loadbalancer.server.port=3000
 
   backend:
@@ -30,7 +31,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.backend-app.rule=Host(`backend.mmtgame.ru`)
-      - traefik.http.routers.backend-app.entrypoints=web
+      - traefik.http.routers.frontend-app.entrypoints=websecure
+      - traefik.http.routers.frontend-app.tls.certResolver=letsencrypt
       - traefik.http.services.backend-app.loadbalancer.server.port=8080
 
   database:
