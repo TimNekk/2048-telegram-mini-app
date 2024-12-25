@@ -7,7 +7,7 @@ services:
     expose:
       - 3000
     depends_on:
-      - api
+      - backend
     networks:
       - dokploy-network
     labels:
@@ -24,7 +24,7 @@ services:
     expose:
       - 8080
     depends_on:
-      - postgres
+      - database
     networks:
       - dokploy-network
     labels:
