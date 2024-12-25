@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 
-const baseURL = "http://localhost:8080";
+const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 // Create a function to get the API client lazily
 const getApiClient = () => {
@@ -17,7 +17,7 @@ const getApiClient = () => {
 
 // Export a proxy object that creates the client on first use
 const apiClient = new Proxy({} as ReturnType<typeof getApiClient>, {
-  get: (target, prop) => {
+  get: (_, prop) => {
     const client = getApiClient();
     return client[prop as keyof typeof client];
   }

@@ -1,0 +1,53 @@
+services:
+  frontend:
+    build:
+      context: web
+    image: web:latest
+    restart: unless-stopped
+    expose:
+      - 3000
+    depends_on:
+      - api
+    networks:
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      # - traefik.http.routers.frontend-app.rule=Host(`frontend.dokploy.com`)
+      - traefik.http.routers.frontend-app.entrypoints=web
+      - traefik.http.services.frontend-app.loadbalancer.server.port=3000
+
+  backend:
+    build:
+      context: api
+    image: api:latest
+    restart: unless-stopped
+    expose:
+      - 8080
+    depends_on:
+      - postgres
+    networks:
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      # - traefik.http.routers.backend-app.rule=Host(`backend.dokploy.com`)
+      - traefik.http.routers.backend-app.entrypoints=web
+      - traefik.http.services.backend-app.loadbalancer.server.port=8080
+
+  database:
+    image: postgres:15-bullseye
+    environment:
+      - POSTGRES_DB=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
+
+networks:
+  dokploy-network:
+    external: true
