@@ -15,6 +15,14 @@ services:
     build:
       context: api
     image: api:latest
+    environment:
+      - POSTGRES_NAME=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_SCHEMA=${POSTGRES_SCHEMA}
+      - BOT_TOKEN=${BOT_TOKEN}
     restart: unless-stopped
     expose:
       - 8080
