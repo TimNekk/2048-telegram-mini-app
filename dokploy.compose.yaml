@@ -42,6 +42,11 @@ services:
       - dokploy-network
     volumes:
       - db_data:/var/lib/postgresql/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.postgres.entrypoints=postgres"
+      - "traefik.tcp.routers.postgres.rule=HostSNI(`*`)"
+      - "traefik.tcp.services.postgres.loadbalancer.server.port=5432"
 
 volumes:
   db_data:
