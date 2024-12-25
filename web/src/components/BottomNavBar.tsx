@@ -1,9 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import { miniApp } from '@telegram-apps/sdk-react';
 import { Tabbar } from '@telegram-apps/telegram-ui';
 
 const BottomNavBar: React.FC = () => {
