@@ -95,9 +95,6 @@ export default function GameProvider({ children }: PropsWithChildren) {
   const moveTiles = useCallback(
     throttle(
       (type: MoveDirection) => {
-        if (hapticFeedback.impactOccurred.isAvailable()) {
-          hapticFeedback.impactOccurred('medium');
-        }
         dispatch({ type });
       },
       mergeAnimationDuration * 1.05,
@@ -149,6 +146,9 @@ export default function GameProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (gameState.hasChanged) {
       setTimeout(() => {
+        if (hapticFeedback.impactOccurred.isAvailable()) {
+          hapticFeedback.impactOccurred('light');
+        }
         dispatch({ type: "clean_up" });
         appendRandomTile();
       }, mergeAnimationDuration);
