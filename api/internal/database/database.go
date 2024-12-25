@@ -34,12 +34,12 @@ type service struct {
 }
 
 var (
-	database   = os.Getenv("BLUEPRINT_DB_DATABASE")
-	password   = os.Getenv("BLUEPRINT_DB_PASSWORD")
-	username   = os.Getenv("BLUEPRINT_DB_USERNAME")
-	port       = os.Getenv("BLUEPRINT_DB_PORT")
-	host       = os.Getenv("BLUEPRINT_DB_HOST")
-	schema     = os.Getenv("BLUEPRINT_DB_SCHEMA")
+	database   = os.Getenv("POSTGRES_NAME")
+	password   = os.Getenv("POSTGRES_PASSWORD")
+	username   = os.Getenv("POSTGRES_USER")
+	port       = os.Getenv("POSTGRES_PORT")
+	host       = os.Getenv("POSTGRES_HOST")
+	schema     = os.Getenv("POSTGRES_SCHEMA")
 	dbInstance *service
 )
 
@@ -53,7 +53,7 @@ func New() Service {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	// Run database migrations
 	if err := migrations.RunMigrations(db); err != nil {
 		log.Fatalf("Error running database migrations: %v", err)
