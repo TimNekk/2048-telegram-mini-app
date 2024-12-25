@@ -20,5 +20,14 @@ export function Page({ children, back = true }: PropsWithChildren<{
     backButton.hide();
   }, [back]);
 
-  return <>{children}</>;
+  return (
+    <div style={{
+      height: 'calc(100vh - 82px)', // viewport height minus nav bar height
+      overflowY: 'auto',           // enable scrolling when content overflows
+      position: 'relative',        // establish positioning context
+      paddingBottom: '1rem'        // small padding for aesthetics
+    }}>
+      {children}
+    </div>
+  );
 }
