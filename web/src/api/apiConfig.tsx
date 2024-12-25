@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const baseURL = "http://backend.mmtgame.ru";
 
 // Create a function to get the API client lazily
 const getApiClient = () => {
