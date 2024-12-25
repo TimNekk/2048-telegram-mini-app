@@ -1,34 +1,56 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Score from '@/components/Game/components/score';
 import Board from '@/components/Game/components/board';
 import "@/components/Game/styles/globals.css";
 import { List } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { Page } from '@/components/Page';
+import { GameContext } from '@/components/Game/context/game-context';
+import MobileSwiper, { SwipeInput } from '@/components/Game/components/mobile-swiper';
 
 const GamePage: React.FC = () => {
+  const { moveTiles, status } = useContext(GameContext);
+
+  const handleSwipe = ({ deltaX, deltaY }: SwipeInput) => {
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > 0) {
+        moveTiles("move_right");
+      } else {
+        moveTiles("move_left");
+      }
+    } else {
+      if (deltaY > 0) {
+        moveTiles("move_down");
+      } else {
+        moveTiles("move_up");
+      }
+    }
+  };
+
   return (
-    <Page back={false}>
-      <List>
+    <MobileSwiper onSwipe={handleSwipe} disabled={status === "won" || status === "lost"}>
+      <Page back={false}>
+        <List>
 
-        <SectionHeader large>
-          2048 от Магнит Маркета
-        </SectionHeader>
+          <SectionHeader large>
+            2048 от Магнит Маркета
+          </SectionHeader>
 
-        <Score />
+          <Score />
 
-        <div
-          style={{
-            marginTop: '1em',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-          <Board />
-        </div>
+          <div
+            style={{
+              marginTop: '1em',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+            <Board />
+          </div>
 
-      </List>
-    </Page>
+        </List>
+      </Page>
+    </MobileSwiper>
   );
 };
 
