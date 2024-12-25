@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { Tabbar } from '@telegram-apps/telegram-ui';
+import { hapticFeedback } from '@telegram-apps/sdk-react';
 
 const BottomNavBar: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +15,10 @@ const BottomNavBar: React.FC = () => {
         key={'/game'}
         text="Играть"
         selected={location.pathname === '/game'}
-        onClick={() => navigate('/game')}
+        onClick={() => {
+          if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('light');
+          navigate('/game')}
+        }
       >
         <VideogameAssetIcon />
       </Tabbar.Item>
@@ -22,7 +26,10 @@ const BottomNavBar: React.FC = () => {
         key={'/prizes'}
         text="Призы"
         selected={location.pathname === '/prizes'}
-        onClick={() => navigate('/prizes')}
+        onClick={() => {
+          if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('light');
+          navigate('/prizes')}
+        }
       >
         <EmojiEventsIcon />
       </Tabbar.Item>
