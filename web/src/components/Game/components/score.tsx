@@ -9,7 +9,9 @@ export default function Score() {
     <Section
       header="Очки"
     >
-      <Cell>
+      <Cell
+        interactiveAnimation="opacity"
+      >
         <Title weight="2">
           {score}
         </Title>

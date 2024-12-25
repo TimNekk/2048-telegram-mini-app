@@ -3,7 +3,6 @@ import { Tile as TileModel } from "@/components/Game/models/tile";
 import styles from "@/components/Game/styles/board.module.css";
 import Tile from "./tile";
 import { GameContext } from "@/components/Game/context/game-context";
-import MobileSwiper, { SwipeInput } from "./mobile-swiper";
 import Splash from "./splash";
 
 export default function Board() {
@@ -27,25 +26,6 @@ export default function Board() {
         case "ArrowRight":
           moveTiles("move_right");
           break;
-      }
-    },
-    [moveTiles],
-  );
-
-  const handleSwipe = useCallback(
-    ({ deltaX, deltaY }: SwipeInput) => {
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (deltaX > 0) {
-          moveTiles("move_right");
-        } else {
-          moveTiles("move_left");
-        }
-      } else {
-        if (deltaY > 0) {
-          moveTiles("move_down");
-        } else {
-          moveTiles("move_up");
-        }
       }
     },
     [moveTiles],
@@ -86,13 +66,11 @@ export default function Board() {
   }, [handleKeyDown]);
 
   return (
-    <MobileSwiper onSwipe={handleSwipe} disabled={status === "won" || status === "lost"}>
       <div className={styles.board}>
         {status === "won" && <Splash heading="Победа!" />}
         {status === "lost" && <Splash heading="Игра окончена" />}
         <div className={styles.tiles}>{renderTiles()}</div>
         <div className={styles.grid}>{renderGrid()}</div>
       </div>
-    </MobileSwiper>
   );
 }
