@@ -10,9 +10,11 @@ const GamePage: React.FC = () => {
   return (
     <Page back={false}>
       <List>
+
         <SectionHeader large>
           2048 от Магнит Маркета
         </SectionHeader>
+
         <Score />
 
         <div
@@ -24,6 +26,7 @@ const GamePage: React.FC = () => {
           }}>
           <Board />
         </div>
+
       </List>
     </Page>
   );
