@@ -12,7 +12,7 @@ services:
       - dokploy-network
     labels:
       - traefik.enable=true
-      # - traefik.http.routers.frontend-app.rule=Host(`frontend.dokploy.com`)
+      - traefik.http.routers.frontend-app.rule=Host(`frontend.mmtgame.ru`)
       - traefik.http.routers.frontend-app.entrypoints=web
       - traefik.http.services.frontend-app.loadbalancer.server.port=3000
 
@@ -29,7 +29,7 @@ services:
       - dokploy-network
     labels:
       - traefik.enable=true
-      # - traefik.http.routers.backend-app.rule=Host(`backend.dokploy.com`)
+      - traefik.http.routers.backend-app.rule=Host(`backend.mmtgame.ru`)
       - traefik.http.routers.backend-app.entrypoints=web
       - traefik.http.services.backend-app.loadbalancer.server.port=8080
 
