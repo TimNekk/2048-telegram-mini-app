@@ -146,8 +146,8 @@ export default function GameProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (gameState.hasChanged) {
       setTimeout(() => {
-        if (hapticFeedback.impactOccurred.isAvailable()) {
-          hapticFeedback.impactOccurred('light');
+        if (hapticFeedback.selectionChanged.isAvailable()) {
+          hapticFeedback.selectionChanged();
         }
         dispatch({ type: "clean_up" });
         appendRandomTile();
