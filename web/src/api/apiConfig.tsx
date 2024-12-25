@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 
-const baseURL = "http://backend.mmtgame.ru";
+const baseURL = "https://backend.mmtgame.ru";
 
 // Create a function to get the API client lazily
 const getApiClient = () => {
