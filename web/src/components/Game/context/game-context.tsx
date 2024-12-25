@@ -14,14 +14,13 @@ import {
 } from "@/components/Game/constants";
 import { Tile } from "@/components/Game/models/tile";
 import gameReducer, { initialState } from "@/components/Game/reducers/game-reducer";
-import { hapticFeedback } from '@telegram-apps/sdk';
-
-type MoveDirection = "move_up" | "move_down" | "move_left" | "move_right";
-
+import { hapticFeedback } from '@telegram-apps/sdk-react';
 import {
   startNewGame,
   updateGame
 } from '@/api/gamesApi';
+
+type MoveDirection = "move_up" | "move_down" | "move_left" | "move_right";
 
 export const GameContext = createContext({
   score: 0,
