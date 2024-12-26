@@ -114,7 +114,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
         const newGame = await startNewGame();
         dispatch({ type: "reset_game" });
         dispatch({ type: "update_status", status: "ongoing" });
-        dispatch({ type: "set_game_id", gameId: newGame.id });
+        dispatch({ type: "set_game_id", gameId: newGame.id.toString() });
       } catch (error) {
         console.error('Error starting new game:', error);
         // Still start the game locally even if API call fails
