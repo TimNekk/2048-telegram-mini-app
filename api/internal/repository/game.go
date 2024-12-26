@@ -12,6 +12,7 @@ type GameRepository interface {
 	GetByID(ctx context.Context, id int64) (*model.Game, error)
 	UpdateStatus(ctx context.Context, id int64, status model.GameStatus) error
 	UpdateScore(ctx context.Context, id int64, score int) error
+	GetUserStats(ctx context.Context, userID int64) (recordScore int, totalScore int, err error)
 }
 
 type gameRepository struct {
@@ -128,4 +129,15 @@ func (r *gameRepository) UpdateScore(ctx context.Context, id int64, score int) e
 	}
 
 	return nil
+}
+
+func (r *gameRepository) GetUserStats(ctx context.Context, userID int64) (recordScore int, totalScore int, err error) {
+	err = r.db.QueryRowContext(ctx, `
+		SELECT 
+			COALESCE(MAX(score), 0) as record_score,
+			COALESCE(SUM(score), 0) as total_score
+		FROM games
+		WHERE user_id = $1 AND status = 'finished'
+	`, userID).Scan(&recordScore, &totalScore)
+	return
 }
