@@ -8,6 +8,6 @@
   ],
   "presets": {
     "requestType": "http",
-    "requestUrl": "http://localhost:8080/games"
+    "requestUrl": "http://localhost:8080/"
   }
 }
