@@ -15,10 +15,6 @@ type GameHandler struct {
 	gameService service.GameService
 }
 
-type StartGameResponse struct {
-	Game *model.Game `json:"game"`
-}
-
 type PatchGameRequest struct {
 	Score  *int              `json:"score,omitempty"`
 	Status *model.GameStatus `json:"status,omitempty"`
@@ -45,9 +41,7 @@ func (h *GameHandler) StartGame(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to start game")
 	}
 
-	return c.JSON(http.StatusCreated, StartGameResponse{
-		Game: game,
-	})
+	return c.JSON(http.StatusCreated, game)
 }
 
 func (h *GameHandler) PatchGame(c echo.Context) error {
@@ -89,7 +83,5 @@ func (h *GameHandler) PatchGame(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, StartGameResponse{
-		Game: game,
-	})
+	return c.JSON(http.StatusOK, game)
 }
