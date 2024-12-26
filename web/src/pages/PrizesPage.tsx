@@ -5,7 +5,6 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import { Button, Cell, List, Section, Skeleton, Text, Timeline } from '@telegram-apps/telegram-ui';
 import { TimelineItem } from '@telegram-apps/telegram-ui/dist/components/Blocks/Timeline/components/TimelineItem/TimelineItem';
-import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { Stack } from '@mui/material';
 import { hapticFeedback } from '@telegram-apps/sdk-react';
 
