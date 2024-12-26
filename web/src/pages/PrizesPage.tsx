@@ -37,7 +37,7 @@ const TimelineItemsSkeleton = (times: number) => (
     {Array.from({ length: times }, (_, index) => (
       <TimelineItem
         key={index}
-        header={<Skeleton visible>Промокод на 100 ₽ от 1000 ₽</Skeleton>}
+        header={<Skeleton visible>Промокод на 100 ₽ от 1000 ₽</Skeleton> as any}
       >
         <Skeleton visible>1 000 очков</Skeleton>
       </TimelineItem>
