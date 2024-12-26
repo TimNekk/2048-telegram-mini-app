@@ -3,7 +3,6 @@ import Score from '@/components/Game/components/score';
 import Board from '@/components/Game/components/board';
 import "@/components/Game/styles/globals.css";
 import { List } from '@telegram-apps/telegram-ui';
-import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { Page } from '@/components/Page';
 import { GameContext } from '@/components/Game/context/game-context';
 import MobileSwiper, { SwipeInput } from '@/components/Game/components/mobile-swiper';
