@@ -31,11 +31,6 @@ const GamePage: React.FC = () => {
     <MobileSwiper onSwipe={handleSwipe} disabled={status === "won" || status === "lost"}>
       <Page back={false}>
         <List>
-
-          <SectionHeader large>
-            2048 от Магнит Маркета
-          </SectionHeader>
-
           <Score />
 
           <div
