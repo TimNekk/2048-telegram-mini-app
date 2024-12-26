@@ -66,6 +66,7 @@ const PrizesPage: React.FC = () => {
   } = useSWR(promocodeTypesUrlEndpoint, getAllPromocodeTypes)
 
   const [loadingPromocodeId, setLoadingPromocodeId] = React.useState<number | null>(null);
+  const [copiedTypeId, setCopiedTypeId] = React.useState<number | null>(null);
 
   const getPromocode = async (promocode_type_id: number) => {
     setLoadingPromocodeId(promocode_type_id);
@@ -146,17 +147,29 @@ const PrizesPage: React.FC = () => {
           )}
           {status === "opened" && (
             <Button
-              before={<ContentCopyIcon />}
+              before={copiedTypeId !== type.id ? <ContentCopyIcon /> : undefined}
               mode="bezeled"
               stretched
               onClick={() => {
+                if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('medium');
                 const code = promocodes?.find(p => p.promocode_type_id === type.id)?.code;
                 if (code) {
-                  navigator.clipboard.writeText(code);
+                  navigator.clipboard.writeText(code)
+                    .then(() => {
+                      setCopiedTypeId(type.id);
+                      setTimeout(() => {
+                        setCopiedTypeId(null);
+                      }, 1100);
+                    })
+                    .catch((error) => {
+                      if (error.name !== 'NotAllowedError') {
+                        console.error('Failed to copy:', error);
+                      }
+                    });
                 }
               }}
             >
-              {promocodes?.find(p => p.promocode_type_id === type.id)?.code}
+              {copiedTypeId === type.id ? "Скопированно!" : promocodes?.find(p => p.promocode_type_id === type.id)?.code}
             </Button>
           )}
         </TimelineItem>
