@@ -149,7 +149,12 @@ const PrizesPage: React.FC = () => {
               before={<ContentCopyIcon />}
               mode="bezeled"
               stretched
-              onClick={() => {/* TODO: Add copy handler */}}
+              onClick={() => {
+                const code = promocodes?.find(p => p.promocode_type_id === type.id)?.code;
+                if (code) {
+                  navigator.clipboard.writeText(code);
+                }
+              }}
             >
               {promocodes?.find(p => p.promocode_type_id === type.id)?.code}
             </Button>
