@@ -70,7 +70,6 @@ const PrizesPage: React.FC = () => {
   const getPromocode = async (promocode_type_id: number) => {
     setLoadingPromocodeId(promocode_type_id);
     try {
-      if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('heavy');
       await createPromocode(promocode_type_id);
       await mutatePromocodes();
       if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('success');
