@@ -123,7 +123,7 @@ const PrizesPage: React.FC = () => {
       const status = getPromocodeStatus(type);
       const header = `Промокод на ${type.discount} ₽ от ${type.min_order} ₽`;
       
-      let itemMode = undefined;
+      let itemMode: 'pre-active' | 'active' | undefined = undefined;
       if (index === lastActiveIndex) {
         itemMode = 'pre-active';
       } else if (index < lastActiveIndex) {
