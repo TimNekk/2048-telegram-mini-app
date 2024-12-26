@@ -183,10 +183,6 @@ const PrizesPage: React.FC = () => {
   return (
     <Page>
       <List>
-        <SectionHeader large>
-          Призы
-        </SectionHeader>
-
         <Section header="Статистика">
           <Stack
             direction="row"
@@ -232,24 +228,6 @@ const PrizesPage: React.FC = () => {
             </Timeline>
           )}
           {!showTimeline && (TimelineItemsSkeleton(5))}
-        </Section>
-
-        <Section header="Haptic feedback">
-          <Stack direction="row" spacing={2}>
-            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('light'); }}>impect light</Button>
-            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('medium'); }}>impect medium</Button>
-            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('heavy'); }}>impect heavy</Button>
-            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('rigid'); }}>impect rigid</Button>
-            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('soft'); }}>impect soft</Button>
-          </Stack>
-          <Stack direction="row" spacing={2}>
-            <Button onClick={() => { if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('error'); }}>notification error</Button>
-            <Button onClick={() => { if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('success'); }}>notification success</Button>
-            <Button onClick={() => { if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('warning'); }}>notification warning</Button>
-          </Stack>
-          <Stack direction="row" spacing={2}>
-            <Button onClick={() => { if (hapticFeedback.selectionChanged.isAvailable()) hapticFeedback.selectionChanged(); }}>selection</Button>
-          </Stack>
         </Section>
       </List>
     </Page>
