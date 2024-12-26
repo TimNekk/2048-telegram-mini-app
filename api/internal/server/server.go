@@ -11,13 +11,17 @@ import (
 	"gitlab.platform.corp/magnitonline/mm/backend/ci-team/2048/api/internal/database"
 	"gitlab.platform.corp/magnitonline/mm/backend/ci-team/2048/api/internal/handler"
 	"gitlab.platform.corp/magnitonline/mm/backend/ci-team/2048/api/internal/repository"
+	"gitlab.platform.corp/magnitonline/mm/backend/ci-team/2048/api/internal/service"
 )
 
 type Server struct {
-	port        int
-	botToken    string
-	db          database.Service
-	gameHandler *handler.GameHandler
+	port                 int
+	botToken             string
+	db                   database.Service
+	gameHandler          *handler.GameHandler
+	promocodeHandler     *handler.PromocodeHandler
+	promocodeTypeHandler *handler.PromocodeTypeHandler
+	statsHandler         *handler.StatsHandler
 }
 
 func NewServer() *http.Server {
@@ -26,12 +30,23 @@ func NewServer() *http.Server {
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db.GetDB())
 	gameRepo := repository.NewGameRepository(db.GetDB())
+	promocodeRepo := repository.NewPromocodeRepository(db.GetDB())
+	promocodeTypeRepo := repository.NewPromocodeTypeRepository(db.GetDB())
+
+	// Initialize services
+	gameService := service.NewGameService(userRepo, gameRepo)
+	promocodeService := service.NewPromocodeService(promocodeRepo, promocodeTypeRepo, gameRepo)
+	promocodeTypeService := service.NewPromocodeTypeService(promocodeTypeRepo)
+	statsService := service.NewStatsService(gameRepo)
 
 	server := &Server{
-		port:        8080,
-		botToken:    os.Getenv("BOT_TOKEN"),
-		db:          db,
-		gameHandler: handler.NewGameHandler(userRepo, gameRepo),
+		port:                 8080,
+		botToken:             os.Getenv("BOT_TOKEN"),
+		db:                   db,
+		gameHandler:          handler.NewGameHandler(gameService),
+		promocodeHandler:     handler.NewPromocodeHandler(promocodeService),
+		promocodeTypeHandler: handler.NewPromocodeTypeHandler(promocodeTypeService),
+		statsHandler:         handler.NewStatsHandler(statsService),
 	}
 
 	// Declare Server config
