@@ -3,57 +3,193 @@ import { Page } from '@/components/Page';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import ArchiveIcon from '@mui/icons-material/Archive';
-import { Button, Cell, List, Section, Timeline } from '@telegram-apps/telegram-ui';
+import { Button, Cell, List, Section, Skeleton, Text, Timeline } from '@telegram-apps/telegram-ui';
 import { TimelineItem } from '@telegram-apps/telegram-ui/dist/components/Blocks/Timeline/components/TimelineItem/TimelineItem';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { Stack } from '@mui/material';
 import { hapticFeedback } from '@telegram-apps/sdk-react';
 
-const PrizesPage: React.FC = () => {
+import useSWR from 'swr';
+import { statsUrlEndpoint, getUserStats } from '@/api/statsApi';
+import { promocodesUrlEndpoint, getUserPromocodes, createPromocode } from '@/api/promocodesApi';
+import { promocodeTypesUrlEndpoint, getAllPromocodeTypes } from '@/api/promocodeTypesApi';
 
+interface StatItem {
+  subtitle: string;
+  value: number;
+  icon: React.ReactNode;
+}
+
+interface PromocodeType {
+  id: number;
+  type: string;
+  score: number;
+  discount: number;
+  min_order: number;
+}
+
+const formatNumberWithSpaces = (num: number): string => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+};
+
+const TimelineItemsSkeleton = (times: number) => (
+  <Timeline>
+    {Array.from({ length: times }, (_, index) => (
+      <TimelineItem
+        key={index}
+        header={<Skeleton visible>Промокод на 100 ₽ от 1000 ₽</Skeleton>}
+      >
+        <Skeleton visible>1 000 очков</Skeleton>
+      </TimelineItem>
+    ))}
+  </Timeline>
+);
+
+const PrizesPage: React.FC = () => {
+  const {
+    isLoading: isStatsLoading,
+    error: statsError,
+    data: stats,
+  } = useSWR(statsUrlEndpoint, getUserStats)
+
+  const {
+    isLoading: isPromocodesLoading,
+    error: promocodesError,
+    data: promocodes,
+    mutate: mutatePromocodes,
+  } = useSWR(promocodesUrlEndpoint, getUserPromocodes)
+
+  const {
+    isLoading: isPromocodesTypesLoading,
+    error: promocodesTypesError,
+    data: promocodesTypes,
+  } = useSWR(promocodeTypesUrlEndpoint, getAllPromocodeTypes)
+
+  const [loadingPromocodeId, setLoadingPromocodeId] = React.useState<number | null>(null);
+
+  const getPromocode = async (promocode_type_id: number) => {
+    setLoadingPromocodeId(promocode_type_id);
+    try {
+      if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('heavy');
+      await createPromocode(promocode_type_id);
+      await mutatePromocodes();
+      if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('success');
+    } finally {
+      setLoadingPromocodeId(null);
+    }
+  }
+
+  const statsData: StatItem[] = [
+    {
+      subtitle: "Рекорд",
+      value: stats?.record_score ?? -1,
+      icon: <EmojiEventsIcon />
+    },
+    {
+      subtitle: "За все игры",
+      value: stats?.total_score ?? -1,
+      icon: <ArchiveIcon />
+    }
+  ];
+
+  const getPromocodeStatus = (promocodeType: PromocodeType) => {
+    // Check if user already has this promocode
+    const existingPromocode = promocodes?.find(p => p.promocode_type_id === promocodeType.id);
+    if (existingPromocode) {
+      return "opened";
+    }
+
+    // Check if user has enough score
+    const requiredScore = promocodeType.score;
+    const userScore = promocodeType.type === 'record' ? stats?.record_score : stats?.total_score;
+
+    if (userScore && userScore >= requiredScore) {
+      return "ready";
+    }
+
+    return "locked";
+  };
+
+  const renderTimelineItems = (promocodeTypes: PromocodeType[]) => {
+    const sortedTypes = [...promocodeTypes].sort((a, b) => a.score - b.score);
+    
+    // Find the last index with status ready or opened
+    const lastActiveIndex = sortedTypes.reduce((lastIdx, type, idx) => {
+      const status = getPromocodeStatus(type);
+      return (status === 'ready' || status === 'opened') ? idx : lastIdx;
+    }, -1);
+
+    return sortedTypes.map((type, index) => {
+      const status = getPromocodeStatus(type);
+      const header = `Промокод на ${type.discount} ₽ от ${type.min_order} ₽`;
+      
+      let itemMode = undefined;
+      if (index === lastActiveIndex) {
+        itemMode = 'pre-active';
+      } else if (index < lastActiveIndex) {
+        itemMode = 'active';
+      }
+
+      return (
+        <TimelineItem key={type.id} header={header} mode={itemMode}>
+          {status === "locked" && (
+            <Text>{formatNumberWithSpaces(type.score)} очков</Text>
+          )}
+          {status === "ready" && (
+            <Button
+              mode="filled"
+              stretched
+              loading={loadingPromocodeId === type.id}
+              onClick={() => getPromocode(type.id)}
+            >
+              Получить
+            </Button>
+          )}
+          {status === "opened" && (
+            <Button
+              before={<ContentCopyIcon />}
+              mode="bezeled"
+              stretched
+              onClick={() => {/* TODO: Add copy handler */}}
+            >
+              {promocodes?.find(p => p.promocode_type_id === type.id)?.code}
+            </Button>
+          )}
+        </TimelineItem>
+      );
+    });
+  };
+
+  const showTimeline = !isStatsLoading && !statsError && !isPromocodesLoading && !promocodesError && !isPromocodesTypesLoading && !promocodesTypesError
+  const showStats = !isStatsLoading && !statsError
 
   return (
     <Page>
       <List>
-        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('light');}}>impect light</Button>
-        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('medium');}}>impect medium</Button>
-        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('heavy');}}>impect heavy</Button>
-        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('rigid');}}>impect rigid</Button>
-        <Button onClick={() => {if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('soft');}}>impect soft</Button>
-
-        <Button onClick={() => {if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('error');}}>notification error</Button>
-        <Button onClick={() => {if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('success');}}>notification success</Button>
-        <Button onClick={() => {if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('warning');}}>notification warning</Button>
-
-        <Button onClick={() => {if (hapticFeedback.selectionChanged.isAvailable()) hapticFeedback.selectionChanged();}}>selection</Button>
-
         <SectionHeader large>
           Призы
         </SectionHeader>
 
-        <Section
-          header="Статистика"
-        >
+        <Section header="Статистика">
           <Stack
             direction="row"
             spacing={3}
           >
-            <Cell
-              subtitle="Рекорд"
-              type="text"
-              interactiveAnimation="opacity"
-              before={<EmojiEventsIcon />}
-            >
-              6 238
-            </Cell>
-            <Cell
-              subtitle="Всего очков"
-              type="text"
-              interactiveAnimation="opacity"
-              before={<ArchiveIcon />}
-            >
-              148 923
-            </Cell>
+            {statsData.map((stat, index) => (
+              <Cell
+                key={index}
+                subtitle={stat.subtitle}
+                type="text"
+                interactiveAnimation="opacity"
+                before={stat.icon}
+              >
+                
+                  {showStats && formatNumberWithSpaces(stat.value)}
+                {!showStats && (
+                  <Skeleton visible={!showStats}>10 000</Skeleton>
+                )}
+              </Cell>
+            ))}
           </Stack>
         </Section>
 
@@ -61,84 +197,43 @@ const PrizesPage: React.FC = () => {
           header="За рекорд"
           footer="Получите призы за лучший результат в одной игре. Чем выше ваш рекорд, тем ценнее награда!"
         >
-          <Timeline>
-            <TimelineItem header="Промокод на 50 ₽ от 1000 ₽" mode="active">
-              {/* <Text>1 000 очков</Text> */}
-              <Button
-                before={<ContentCopyIcon />}
-                mode="bezeled"
-                stretched
-              >
-                dj2kDjk2Js230
-              </Button>
-              {/* <Button
-                  mode="filled"
-                  stretched
-                  loading={true}
-                >
-                  Получить
-                </Button> */}
-            </TimelineItem>
-            <TimelineItem header="Промокод на 100 ₽ от 1000 ₽" mode="pre-active">
-              {/* <Text>5 000 очков</Text> */}
-              {/* <Button
-                before={<ContentCopyIcon />}
-                mode="bezeled"
-                stretched
-              >
-                dj2kDjk2Js230
-              </Button> */}
-              <Button
-                mode="filled"
-                stretched
-                loading={false}
-              >
-                Получить
-              </Button>
-            </TimelineItem>
-            <TimelineItem header="Промокод на 150 ₽ от 1000 ₽">
-              10 000 очков
-            </TimelineItem>
-            <TimelineItem header="Промокод на 200 ₽ от 1000 ₽">
-              20 000 очков
-            </TimelineItem>
-            <TimelineItem header="Промокод на 250 ₽ от 1000 ₽">
-              50 000 очков
-            </TimelineItem>
-            <TimelineItem header="Промокод на 300 ₽ от 1000 ₽">
-              100 000 очков
-            </TimelineItem>
-            <TimelineItem header="Промокод на 400 ₽ от 1000 ₽">
-              500 000 очков
-            </TimelineItem>
-          </Timeline>
+          {showTimeline && (
+            <Timeline>
+              {renderTimelineItems(promocodesTypes?.filter(pt => pt.type === 'record') ?? [])}
+            </Timeline>
+          )}
+          {!showTimeline && (TimelineItemsSkeleton(5))}
         </Section>
 
         <Section
           header="За все игры"
           footer="Играйте больше и накапливайте очки! Эти призы вы получите за суммарное количество очков во всех играх."
         >
-          <Timeline
-            active={2}
-          >
-            <TimelineItem header="Arrived">
-              Yesterday
-            </TimelineItem>
-            <TimelineItem header="Departed">
-              Today
-            </TimelineItem>
-            <TimelineItem header="In transit">
-              Tomorrow
-            </TimelineItem>
-            <TimelineItem header="Processed to delivery center">
-              Next week
-            </TimelineItem>
-            <TimelineItem header="Shipped">
-              Someday
-            </TimelineItem>
-          </Timeline>
+          {showTimeline && (
+            <Timeline>
+              {renderTimelineItems(promocodesTypes?.filter(pt => pt.type === 'total') ?? [])}
+            </Timeline>
+          )}
+          {!showTimeline && (TimelineItemsSkeleton(5))}
         </Section>
 
+        <Section header="Haptic feedback">
+          <Stack direction="row" spacing={2}>
+            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('light'); }}>impect light</Button>
+            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('medium'); }}>impect medium</Button>
+            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('heavy'); }}>impect heavy</Button>
+            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('rigid'); }}>impect rigid</Button>
+            <Button onClick={() => { if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred('soft'); }}>impect soft</Button>
+          </Stack>
+          <Stack direction="row" spacing={2}>
+            <Button onClick={() => { if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('error'); }}>notification error</Button>
+            <Button onClick={() => { if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('success'); }}>notification success</Button>
+            <Button onClick={() => { if (hapticFeedback.notificationOccurred.isAvailable()) hapticFeedback.notificationOccurred('warning'); }}>notification warning</Button>
+          </Stack>
+          <Stack direction="row" spacing={2}>
+            <Button onClick={() => { if (hapticFeedback.selectionChanged.isAvailable()) hapticFeedback.selectionChanged(); }}>selection</Button>
+          </Stack>
+        </Section>
       </List>
     </Page>
   );

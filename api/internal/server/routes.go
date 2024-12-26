@@ -19,12 +19,28 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.GET("/", s.HelloWorldHandler)
 	e.GET("/health", s.healthHandler)
 
-	// Game routes with Telegram authentication
 	games := e.Group("/games")
 	games.Use(customMiddleware.TelegramAuth(s.botToken))
 	games.Use(customMiddleware.RequireInitData)
 	games.POST("", s.gameHandler.StartGame)
 	games.PATCH("/:id", s.gameHandler.PatchGame)
+
+	promocodes := e.Group("/promocodes")
+	promocodes.Use(customMiddleware.TelegramAuth(s.botToken))
+	promocodes.Use(customMiddleware.RequireInitData)
+	promocodes.GET("", s.promocodeHandler.GetUserPromocodes)
+	promocodes.POST("", s.promocodeHandler.CreatePromocode)
+
+	promocodeTypes := e.Group("/promocode-types")
+	promocodeTypes.Use(customMiddleware.TelegramAuth(s.botToken))
+	promocodeTypes.Use(customMiddleware.RequireInitData)
+	promocodeTypes.GET("", s.promocodeTypeHandler.GetAll)
+
+	// Stats routes
+	stats := e.Group("/stats")
+	stats.Use(customMiddleware.TelegramAuth(s.botToken))
+	stats.Use(customMiddleware.RequireInitData)
+	stats.GET("", s.statsHandler.GetUserStats)
 
 	return e
 }

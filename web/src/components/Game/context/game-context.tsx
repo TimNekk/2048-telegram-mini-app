@@ -19,6 +19,7 @@ import {
   startNewGame,
   updateGame
 } from '@/api/gamesApi';
+import { Game } from "@/models/game";
 
 type MoveDirection = "move_up" | "move_down" | "move_left" | "move_right";
 
@@ -113,7 +114,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
         const newGame = await startNewGame();
         dispatch({ type: "reset_game" });
         dispatch({ type: "update_status", status: "ongoing" });
-        dispatch({ type: "set_game_id", gameId: newGame.game.id });
+        dispatch({ type: "set_game_id", gameId: newGame.id });
       } catch (error) {
         console.error('Error starting new game:', error);
         // Still start the game locally even if API call fails
@@ -169,10 +170,13 @@ export default function GameProvider({ children }: PropsWithChildren) {
   // Handle game over and update score
   useEffect(() => {
     if (gameState.status === "lost" && gameState.gameId) {
-      updateGame(gameState.gameId, {
-        status: "finished",
-        score: gameState.score
-      }).catch(error => {
+      const gameUpdate: Partial<Game> = {
+        score: gameState.score,
+        status: "finished"
+      }
+      updateGame(
+        gameState.gameId, gameUpdate
+      ).catch(error => {
         console.error('Error updating game score:', error);
       });
     }
