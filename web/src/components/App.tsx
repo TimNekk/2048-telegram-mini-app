@@ -1,4 +1,4 @@
-import { useLaunchParams, miniApp, useSignal } from '@telegram-apps/sdk-react';
+import { useLaunchParams, miniApp, useSignal, viewport } from '@telegram-apps/sdk-react';
 import { AppRoot } from '@telegram-apps/telegram-ui';
 import { Navigate, Route, Routes, HashRouter } from 'react-router-dom';
 import { Box } from '@mui/material';
@@ -10,6 +10,10 @@ import GameProvider from '@/components/Game/context/game-context';
 export function App() {
   const lp = useLaunchParams();
   const isDark = useSignal(miniApp.isDark);
+
+  if (viewport.expand.isAvailable()) {
+    viewport.expand();
+  }
 
   return (
     <AppRoot
