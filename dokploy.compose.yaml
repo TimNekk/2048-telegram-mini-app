@@ -30,6 +30,16 @@ services:
       - database
     networks:
       - dokploy-network
+  
+  bot:
+    build:
+      context: bot
+    image: bot:latest
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+    restart: unless-stopped
+    networks:
+      - dokploy-network
 
   database:
     image: postgres:15-bullseye
