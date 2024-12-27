@@ -7,6 +7,7 @@ import {
   useRef,
 } from "react";
 import { isNil, throttle } from "lodash";
+import { useLocation } from "react-router-dom";
 import {
   gameWinTileValue,
   mergeAnimationDuration,
@@ -167,20 +168,92 @@ export default function GameProvider({ children }: PropsWithChildren) {
     localStorage.setItem('gameState', JSON.stringify(gameState));
   }, [gameState]);
 
-  // Handle game over and update score
   useEffect(() => {
-    if (gameState.status === "lost" && gameState.gameId) {
+    console.log('Game status effect:', {
+      status: gameState.status,
+      gameId: gameState.gameId,
+      score: gameState.score
+    });
+
+    if (gameState.status === "lost") {
+      const updateGameScore = async () => {
+        try {
+          let currentGameId = gameState.gameId;
+          
+          if (!currentGameId) {
+            console.log('No game ID found, creating new game');
+            const newGame = await startNewGame();
+            currentGameId = newGame.id.toString();
+            console.log('Created new game with ID:', currentGameId);
+          }
+
+          console.log('Updating game with ID:', currentGameId);
+          const gameUpdate: Partial<Game> = {
+            score: gameState.score,
+            status: "finished"
+          };
+          
+          await updateGame(currentGameId, gameUpdate);
+          console.log('Successfully updated game score and status');
+        } catch (error) {
+          console.error('Error in game update process:', error);
+        }
+      };
+
+      void updateGameScore();
+    }
+  }, [gameState.status, gameState.gameId, gameState.score]);
+
+  // Save game score when user switches tabs or navigates away
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      console.log('Visibility changed:', {
+        isHidden: document.hidden,
+        gameId: gameState.gameId,
+        status: gameState.status,
+        score: gameState.score
+      });
+      
+      if (document.hidden && gameState.gameId && gameState.status === "ongoing") {
+        console.log('Saving score on visibility change:', gameState.score);
+        const gameUpdate: Partial<Game> = {
+          score: gameState.score,
+        };
+        updateGame(gameState.gameId, gameUpdate).catch(error => {
+          console.error('Error updating game score:', error);
+        });
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    console.log('Added visibility change listener');
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      console.log('Removed visibility change listener');
+    };
+  }, [gameState.gameId, gameState.score, gameState.status]);
+
+  // Save game score when navigating away from game page
+  const location = useLocation();
+  useEffect(() => {
+    console.log('Location changed:', {
+      pathname: location.pathname,
+      gameId: gameState.gameId,
+      status: gameState.status,
+      score: gameState.score
+    });
+
+    if (location.pathname !== '/game' && gameState.gameId && gameState.status === "ongoing") {
+      console.log('Saving score on navigation:', gameState.score);
       const gameUpdate: Partial<Game> = {
         score: gameState.score,
-        status: "finished"
-      }
-      updateGame(
-        gameState.gameId, gameUpdate
-      ).catch(error => {
+      };
+      updateGame(gameState.gameId, gameUpdate).catch(error => {
         console.error('Error updating game score:', error);
       });
     }
-  }, [gameState.status, gameState.gameId, gameState.score]);
+  }, [location.pathname, gameState.gameId, gameState.score, gameState.status]);
 
   const checkGameState = () => {
     const isWon =
