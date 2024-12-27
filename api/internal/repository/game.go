@@ -47,7 +47,7 @@ func (r *gameRepository) Create(ctx context.Context, game *model.Game) error {
 		VALUES ($1, $2, $3, NOW())
 		RETURNING id, created_at
 	`
-	
+
 	err = tx.QueryRowContext(
 		ctx,
 		createQuery,
@@ -69,7 +69,7 @@ func (r *gameRepository) GetByID(ctx context.Context, id int64) (*model.Game, er
 		FROM games
 		WHERE id = $1
 	`
-	
+
 	game := &model.Game{}
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&game.ID,
@@ -91,7 +91,7 @@ func (r *gameRepository) UpdateStatus(ctx context.Context, id int64, status mode
 		SET status = $1
 		WHERE id = $2
 	`
-	
+
 	result, err := r.db.ExecContext(ctx, query, status, id)
 	if err != nil {
 		return err
@@ -114,7 +114,7 @@ func (r *gameRepository) UpdateScore(ctx context.Context, id int64, score int) e
 		SET score = $1
 		WHERE id = $2
 	`
-	
+
 	result, err := r.db.ExecContext(ctx, query, score, id)
 	if err != nil {
 		return err
@@ -137,7 +137,7 @@ func (r *gameRepository) GetUserStats(ctx context.Context, userID int64) (record
 			COALESCE(MAX(score), 0) as record_score,
 			COALESCE(SUM(score), 0) as total_score
 		FROM games
-		WHERE user_id = $1 AND status = 'finished'
+		WHERE user_id = $1
 	`, userID).Scan(&recordScore, &totalScore)
 	return
 }
