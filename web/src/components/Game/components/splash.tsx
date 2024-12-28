@@ -4,7 +4,7 @@ import { Button, LargeTitle, List } from "@telegram-apps/telegram-ui";
 import { useContext } from "react";
 import { hapticFeedback } from "@telegram-apps/sdk-react";
 
-export default function Splash({ heading = "You won!" }) {
+export default function Splash({ heading = "You lost!" }) {
   const { startGame } = useContext(GameContext);
 
   const handleStartGame = () => {

@@ -27,7 +27,7 @@ const GamePage: React.FC = () => {
   };
 
   return (
-    <MobileSwiper onSwipe={handleSwipe} disabled={status === "won" || status === "lost"}>
+    <MobileSwiper onSwipe={handleSwipe} disabled={status === "lost"}>
       <Page back={false}>
         <List>
           <Score />

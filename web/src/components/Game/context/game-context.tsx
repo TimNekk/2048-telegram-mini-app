@@ -256,15 +256,6 @@ export default function GameProvider({ children }: PropsWithChildren) {
   }, [location.pathname, gameState.gameId, gameState.score, gameState.status]);
 
   const checkGameState = () => {
-    const isWon =
-      Object.values(gameState.tiles).filter((t) => t.value === gameWinTileValue)
-        .length > 0;
-
-    if (isWon) {
-      dispatch({ type: "update_status", status: "won" });
-      return;
-    }
-
     const { tiles, board } = gameState;
 
     // Check for empty cells

@@ -67,7 +67,6 @@ export default function Board() {
 
   return (
       <div className={styles.board}>
-        {status === "won" && <Splash heading="Победа!" />}
         {status === "lost" && <Splash heading="Игра окончена" />}
         <div className={styles.tiles}>{renderTiles()}</div>
         <div className={styles.grid}>{renderGrid()}</div>
