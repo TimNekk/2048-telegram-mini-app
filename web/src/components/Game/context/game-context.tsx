@@ -9,7 +9,6 @@ import {
 import { isNil, throttle } from "lodash";
 import { useLocation } from "react-router-dom";
 import {
-  gameWinTileValue,
   mergeAnimationDuration,
   tileCountPerDimension,
 } from "@/components/Game/constants";
