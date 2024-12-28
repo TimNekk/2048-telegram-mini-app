@@ -126,37 +126,6 @@ Environment configuration is managed through Dokploy for each component.
 - Provides move suggestions
 - Demonstrates optimal playing techniques
 
-## 🛠️ Tech Stack
-
-### Frontend
-- React 18
-- TypeScript
-- Telegram UI Components
-- Telegram Apps SDK
-- SWR
-- Vite
-- Optimized for Telegram Mini Apps
-
-### Backend
-- Go
-- Clean Architecture
-- Air (live reload)
-- Environment configuration
-- Dokploy deployment
-
-### Bot
-- Python 3.8+
-- Telegram Bot API
-- UV package manager
-- Docker containerization
-
-### DevOps
-- Docker & Docker Compose
-- Dokploy
-- GitHub Actions
-- Make
-- Environment management
-
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
