@@ -2,6 +2,7 @@ import axios from 'axios';
 import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 
 const baseURL = import.meta.env.VITE_API_URL;
+console.log("baseURL", baseURL)
 
 // Create a function to get the API client lazily
 const getApiClient = () => {
