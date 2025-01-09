@@ -116,8 +116,7 @@ Environment configuration is managed through Dokploy for each component.
 
 1. Use arrow keys or swipe gestures to move tiles
 2. Combine matching numbers to create larger values
-3. Reach the 2048 tile to win!
-4. Try to beat the AI bot's high score!
+3. Win promocodes
 
 ## 🤖 Bot Features
 
