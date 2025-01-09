@@ -3,6 +3,8 @@ services:
     build:
       context: web
     image: web:latest
+    environment:
+      - API_URL=${API_URL}
     restart: unless-stopped
     expose:
       - 3000
