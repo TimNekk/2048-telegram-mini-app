@@ -22,7 +22,7 @@ export function App() {
     >
       <HashRouter>
         <GameProvider>
-          <Box sx={{ pb: 7 }}> {/* Add padding bottom to account for navigation bar */}
+          <Box sx={{ pb: 7 }}>
             <Routes>
               {routes.map((route) => <Route key={route.path} {...route} />)}
               <Route path="/" element={<Navigate to="/game" />} />
