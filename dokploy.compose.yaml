@@ -2,9 +2,9 @@ services:
   frontend:
     build:
       context: web
+      args:
+        - VITE_API_URL=${VITE_API_URL}
     image: web:latest
-    environment:
-      - VITE_API_URL=${VITE_API_URL}
     restart: unless-stopped
     expose:
       - 3000
