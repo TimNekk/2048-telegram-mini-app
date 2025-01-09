@@ -8,7 +8,7 @@ import { TimelineItem } from '@telegram-apps/telegram-ui/dist/components/Blocks/
 import { Stack } from '@mui/material';
 import { hapticFeedback } from '@telegram-apps/sdk-react';
 
-import useSWR from 'swr';
+import useSWR, { preload } from 'swr';
 import { statsUrlEndpoint, getUserStats } from '@/api/statsApi';
 import { promocodesUrlEndpoint, getUserPromocodes, createPromocode } from '@/api/promocodesApi';
 import { promocodeTypesUrlEndpoint, getAllPromocodeTypes } from '@/api/promocodeTypesApi';
@@ -25,6 +25,12 @@ interface PromocodeType {
   score: number;
   discount: number;
   min_order: number;
+}
+
+export const preloadPrizesPage = () => {
+  preload(statsUrlEndpoint, getUserStats)
+  preload(promocodesUrlEndpoint, getUserPromocodes)
+  preload(promocodeTypesUrlEndpoint, getAllPromocodeTypes)
 }
 
 const formatNumberWithSpaces = (num: number): string => {
