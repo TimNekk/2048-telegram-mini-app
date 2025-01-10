@@ -112,39 +112,40 @@ const RatingPage: React.FC = () => {
     }> = ({ title, footer, isLoading, error, data }) => (
         <Section header={title} footer={footer}>
             <Skeleton visible={isLoading || error != null}>
-                {!error && data
-                    ?.sort((a, b) => a.place - b.place)
-                    .map((rating) => {
-                        const isCurrentUser = rating.user_id === currentUserId;
-                        const isExtraPosition = rating.place > ratingLength;
+                {!error &&
+                    data
+                        ?.sort((a, b) => a.place - b.place)
+                        .map((rating) => {
+                            const isCurrentUser = rating.user_id === currentUserId;
+                            const isExtraPosition = rating.place > ratingLength;
 
-                        const medalEmoji =
-                            rating.place === 1
-                                ? "🥇"
-                                : rating.place === 2
-                                ? "🥈"
-                                : rating.place === 3
-                                ? "🥉"
-                                : rating.place;
+                            const medalEmoji =
+                                rating.place === 1
+                                    ? "🥇"
+                                    : rating.place === 2
+                                    ? "🥈"
+                                    : rating.place === 3
+                                    ? "🥉"
+                                    : rating.place;
 
-                        return (
-                            <React.Fragment key={rating.user_id}>
-                                {isExtraPosition && <Divider />}
-                                <Cell
-                                    before={medalEmoji}
-                                    subtitle={`${formatNumberWithSpaces(rating.score)} очков`}
-                                >
-                                    <span
-                                        style={{
-                                            fontWeight: isCurrentUser ? 600 : 400,
-                                        }}
+                            return (
+                                <React.Fragment key={rating.user_id}>
+                                    {isExtraPosition && <Divider />}
+                                    <Cell
+                                        before={medalEmoji}
+                                        subtitle={`${formatNumberWithSpaces(rating.score)} очков`}
                                     >
-                                        {rating.user_nickname ?? "Аноним"}
-                                    </span>
-                                </Cell>
-                            </React.Fragment>
-                        );
-                    })}
+                                        <span
+                                            style={{
+                                                fontWeight: isCurrentUser ? 600 : 400,
+                                            }}
+                                        >
+                                            {rating.user_nickname ?? "Аноним"}
+                                        </span>
+                                    </Cell>
+                                </React.Fragment>
+                            );
+                        })}
             </Skeleton>
         </Section>
     );
@@ -156,7 +157,14 @@ const RatingPage: React.FC = () => {
                     <Cell before={<PersonIcon />} subtitle="Имя" interactiveAnimation="opacity">
                         <Skeleton visible={isMeLoading}>{visibleNickname}</Skeleton>
                     </Cell>
-                    <ButtonCell before={<EditIcon />} onClick={() => setIsModalOpen(true)}>
+                    <ButtonCell
+                        before={<EditIcon />}
+                        onClick={() => {
+                            if (hapticFeedback.impactOccurred.isAvailable())
+                                hapticFeedback.impactOccurred("light");
+                            setIsModalOpen(true);
+                        }}
+                    >
                         Изменить
                     </ButtonCell>
                 </Section>
@@ -196,7 +204,11 @@ const RatingPage: React.FC = () => {
                                 style={{
                                     display: "flex",
                                 }}
-                                onClick={() => setInputNickname("")}
+                                onClick={() => {
+                                    if (hapticFeedback.impactOccurred.isAvailable())
+                                        hapticFeedback.selectionChanged();
+                                    setInputNickname("");
+                                }}
                             >
                                 <CloseIcon />
                             </Tappable>
