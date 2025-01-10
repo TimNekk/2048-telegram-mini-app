@@ -5,7 +5,12 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/rating
+  url: http://localhost:8080/rating?type=daily&limit=3
   body: none
   auth: none
+}
+
+params:query {
+  type: daily
+  limit: 3
 }
