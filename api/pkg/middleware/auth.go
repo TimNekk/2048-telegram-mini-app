@@ -45,9 +45,9 @@ func TelegramAuth(token string) echo.MiddlewareFunc {
 
 			switch authType {
 			case "tma":
-				// Validate init data. We consider init data sign valid for 1 hour from their
+				// Validate init data. We consider init data sign valid for 24 hourы from their
 				// creation moment
-				if err := initdata.Validate(authData, token, time.Hour); err != nil {
+				if err := initdata.Validate(authData, token, 24*time.Hour); err != nil {
 					return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 				}
 
