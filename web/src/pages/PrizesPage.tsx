@@ -195,7 +195,7 @@ const PrizesPage: React.FC = () => {
     const showStats = !isStatsLoading && !statsError;
 
     return (
-        <Page>
+        <Page back={false}>
             <List>
                 <Section header="Статистика">
                     <Stack direction="row" spacing={3}>
