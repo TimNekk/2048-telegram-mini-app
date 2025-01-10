@@ -3,16 +3,7 @@ import { Page } from "@/components/Page";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import ArchiveIcon from "@mui/icons-material/Archive";
-import {
-    Button,
-    Cell,
-    List,
-    Modal,
-    Section,
-    Skeleton,
-    Text,
-    Timeline,
-} from "@telegram-apps/telegram-ui";
+import { Button, Cell, List, Section, Skeleton, Text, Timeline } from "@telegram-apps/telegram-ui";
 import { TimelineItem } from "@telegram-apps/telegram-ui/dist/components/Blocks/Timeline/components/TimelineItem/TimelineItem";
 import { Stack } from "@mui/material";
 import { hapticFeedback } from "@telegram-apps/sdk-react";
@@ -21,6 +12,7 @@ import useSWR, { preload } from "swr";
 import { statsUrlEndpoint, getUserStats } from "@/api/statsApi";
 import { promocodesUrlEndpoint, getUserPromocodes, createPromocode } from "@/api/promocodesApi";
 import { promocodeTypesUrlEndpoint, getAllPromocodeTypes } from "@/api/promocodeTypesApi";
+import { formatNumberWithSpaces } from "@/helper/formatter";
 
 interface StatItem {
     subtitle: string;
@@ -40,10 +32,6 @@ export const preloadPrizesPage = () => {
     preload(statsUrlEndpoint, getUserStats);
     preload(promocodesUrlEndpoint, getUserPromocodes);
     preload(promocodeTypesUrlEndpoint, getAllPromocodeTypes);
-};
-
-const formatNumberWithSpaces = (num: number): string => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0");
 };
 
 const TimelineItemsSkeleton = (times: number) => (
@@ -253,7 +241,6 @@ const PrizesPage: React.FC = () => {
                     )}
                     {!showTimeline && TimelineItemsSkeleton(5)}
                 </Section>
-                <Modal trigger={<Button size="m">Open modal</Button>}>1</Modal>
             </List>
         </Page>
     );
