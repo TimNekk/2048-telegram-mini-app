@@ -49,6 +49,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 	user.GET("", s.userHandler.GetMe)
 	user.PATCH("", s.userHandler.PatchMe)
 
+	// Rating routes
+	rating := e.Group("/rating")
+	rating.Use(customMiddleware.TelegramAuth(s.botToken))
+	rating.Use(customMiddleware.RequireInitData)
+	rating.GET("", s.ratingHandler.GetRating)
+
 	return e
 }
 

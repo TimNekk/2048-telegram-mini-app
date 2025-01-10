@@ -13,6 +13,8 @@ type GameRepository interface {
 	UpdateStatus(ctx context.Context, id int64, status model.GameStatus) error
 	UpdateScore(ctx context.Context, id int64, score int) error
 	GetUserStats(ctx context.Context, userID int64) (recordScore int, totalScore int, err error)
+	GetDailyRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error)
+	GetTotalRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error)
 }
 
 type gameRepository struct {
@@ -140,4 +142,100 @@ func (r *gameRepository) GetUserStats(ctx context.Context, userID int64) (record
 		WHERE user_id = $1
 	`, userID).Scan(&recordScore, &totalScore)
 	return
+}
+
+func (r *gameRepository) GetDailyRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		WITH daily_scores AS (
+			SELECT
+				g.user_id,
+				COALESCE(MAX(g.score),
+				0) AS score,
+				ROW_NUMBER() OVER (
+				ORDER BY COALESCE(MAX(g.score),
+				0) DESC) AS POSITION
+			FROM
+				games g
+			WHERE
+				g.created_at >= NOW() - INTERVAL '24 HOURS'
+			GROUP BY
+				g.user_id
+		)
+		SELECT
+            u.id,
+			u.nickname,
+			ds.score,
+			ds.position
+		FROM
+			daily_scores ds
+		JOIN users u ON
+			u.id = ds.user_id
+		WHERE
+			ds.position <= $1
+			OR ds.user_id = $2
+	`, limit, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var places []model.RatingPlace
+	for rows.Next() {
+		var place model.RatingPlace
+		if err := rows.Scan(&place.UserId, &place.Nickname, &place.Score, &place.Place); err != nil {
+			return nil, err
+		}
+		places = append(places, place)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return places, nil
+}
+
+func (r *gameRepository) GetTotalRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		WITH overall_scores AS (
+SELECT
+	g.user_id,
+	COALESCE(SUM(g.score),
+	0) AS score,
+	ROW_NUMBER() OVER (
+	ORDER BY COALESCE(SUM(g.score),
+	0) DESC) AS POSITION
+FROM
+	games g
+GROUP BY
+	g.user_id
+)
+SELECT
+    u.id,
+	u.nickname,
+	os.score,
+	os.position
+FROM
+	overall_scores os
+JOIN users u ON
+	u.id = os.user_id
+WHERE
+	os.position <= $1
+	OR os.user_id = $2
+	`, limit, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var places []model.RatingPlace
+	for rows.Next() {
+		var place model.RatingPlace
+		if err := rows.Scan(&place.UserId, &place.Nickname, &place.Score, &place.Place); err != nil {
+			return nil, err
+		}
+		places = append(places, place)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return places, nil
 }

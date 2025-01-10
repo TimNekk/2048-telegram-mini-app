@@ -23,6 +23,7 @@ type Server struct {
 	promocodeTypeHandler *handler.PromocodeTypeHandler
 	userHandler          *handler.UserHandler
 	statsHandler         *handler.StatsHandler
+	ratingHandler        *handler.RatingHandler
 }
 
 func NewServer() *http.Server {
@@ -40,6 +41,7 @@ func NewServer() *http.Server {
 	promocodeTypeService := service.NewPromocodeTypeService(promocodeTypeRepo)
 	statsService := service.NewStatsService(gameRepo)
 	userService := service.NewUserService(userRepo)
+	ratingService := service.NewRatingService(gameRepo)
 
 	server := &Server{
 		port:                 8080,
@@ -50,6 +52,7 @@ func NewServer() *http.Server {
 		promocodeTypeHandler: handler.NewPromocodeTypeHandler(promocodeTypeService),
 		statsHandler:         handler.NewStatsHandler(statsService),
 		userHandler:          handler.NewUserHandler(userService),
+		ratingHandler:        handler.NewRatingHandler(ratingService),
 	}
 
 	// Declare Server config
