@@ -1,4 +1,4 @@
-import { PromocodeType } from './promocodeType';
+import { PromocodeType } from "./promocodeType";
 
 export interface Promocode {
     id: number;

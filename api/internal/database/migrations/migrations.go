@@ -34,6 +34,12 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
+	// Add nickname column to users table
+	log.Println("Adding nickname column to users table...")
+	if _, err := tx.Exec(addNicknameToUsersTable); err != nil {
+		return err
+	}
+
 	// Commit the transaction
 	if err := tx.Commit(); err != nil {
 		return err
@@ -83,4 +89,8 @@ CREATE TABLE IF NOT EXISTS promocodes (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (promocode_type_id, user_id)
 );
+`
+
+const addNicknameToUsersTable = `
+ALTER TABLE users ADD COLUMN IF NOT EXISTS nickname TEXT;
 `
