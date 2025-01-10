@@ -9,6 +9,8 @@ import (
 
 type UserRepository interface {
 	GetOrCreate(ctx context.Context, telegramID int64, username, firstName, lastName *string) (*model.User, error)
+	GetByID(ctx context.Context, id int64) (*model.User, error)
+	UpdateNickname(ctx context.Context, id int64, nickname string) error
 }
 
 type userRepository struct {
@@ -19,15 +21,40 @@ func NewUserRepository(db *sql.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
-func (r *userRepository) GetOrCreate(ctx context.Context, telegramID int64, username, firstName, lastName *string) (*model.User, error) {
-	// First try to get existing user
+func (r *userRepository) GetByID(ctx context.Context, id int64) (*model.User, error) {
 	query := `
-		SELECT id, username, first_name, last_name, created_at 
+		SELECT id, username, first_name, last_name, nickname, created_at 
 		FROM users 
 		WHERE id = $1
 	`
-	user := &model.User{ID: telegramID}
-	err := r.db.QueryRowContext(ctx, query, telegramID).Scan(
+	user := &model.User{ID: id}
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
+		&user.ID,
+		&user.Username,
+		&user.FirstName,
+		&user.LastName,
+		&user.Nickname,
+		&user.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *userRepository) GetOrCreate(ctx context.Context, telegramID int64, username, firstName, lastName *string) (*model.User, error) {
+	user, err := r.GetByID(ctx, telegramID)
+
+	if err == nil {
+		return user, nil
+	}
+
+	query := `
+			INSERT INTO users (id, username, first_name, last_name, created_at)
+			VALUES ($1, $2, $3, $4, NOW())
+			RETURNING id, username, first_name, last_name, created_at
+		`
+	err = r.db.QueryRowContext(ctx, query, telegramID, username, firstName, lastName).Scan(
 		&user.ID,
 		&user.Username,
 		&user.FirstName,
@@ -35,29 +62,33 @@ func (r *userRepository) GetOrCreate(ctx context.Context, telegramID int64, user
 		&user.CreatedAt,
 	)
 
-	if err == sql.ErrNoRows {
-		// User doesn't exist, create new one
-		query = `
-			INSERT INTO users (id, username, first_name, last_name, created_at)
-			VALUES ($1, $2, $3, $4, NOW())
-			RETURNING id, username, first_name, last_name, created_at
-		`
-		err = r.db.QueryRowContext(ctx, query, telegramID, username, firstName, lastName).Scan(
-			&user.ID,
-			&user.Username,
-			&user.FirstName,
-			&user.LastName,
-			&user.CreatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		return user, nil
-	}
-
 	if err != nil {
 		return nil, err
 	}
 
 	return user, nil
+}
+
+func (r *userRepository) UpdateNickname(ctx context.Context, id int64, nickname string) error {
+	query := `
+		UPDATE users
+		SET nickname = $1
+		WHERE id = $2
+	`
+
+	result, err := r.db.ExecContext(ctx, query, nickname, id)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
 }

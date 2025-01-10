@@ -42,6 +42,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 	stats.Use(customMiddleware.RequireInitData)
 	stats.GET("", s.statsHandler.GetUserStats)
 
+	// User routes
+	user := e.Group("/user")
+	user.Use(customMiddleware.TelegramAuth(s.botToken))
+	user.Use(customMiddleware.RequireInitData)
+	user.GET("", s.userHandler.GetMe)
+	user.PATCH("", s.userHandler.PatchMe)
+
 	return e
 }
 
