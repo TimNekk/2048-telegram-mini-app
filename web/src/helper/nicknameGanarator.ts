@@ -78,9 +78,7 @@ function generateNickname(): string {
             Math.floor(Math.random() * nicknameDictionary.adjectives.length)
         ];
     const randomNoun =
-        nicknameDictionary.nouns[
-            Math.floor(Math.random() * nicknameDictionary.nouns.length)
-        ];
+        nicknameDictionary.nouns[Math.floor(Math.random() * nicknameDictionary.nouns.length)];
 
     return `${randomAdjective} ${randomNoun}`;
 }

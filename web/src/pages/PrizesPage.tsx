@@ -19,15 +19,8 @@ import { hapticFeedback } from "@telegram-apps/sdk-react";
 
 import useSWR, { preload } from "swr";
 import { statsUrlEndpoint, getUserStats } from "@/api/statsApi";
-import {
-    promocodesUrlEndpoint,
-    getUserPromocodes,
-    createPromocode,
-} from "@/api/promocodesApi";
-import {
-    promocodeTypesUrlEndpoint,
-    getAllPromocodeTypes,
-} from "@/api/promocodeTypesApi";
+import { promocodesUrlEndpoint, getUserPromocodes, createPromocode } from "@/api/promocodesApi";
+import { promocodeTypesUrlEndpoint, getAllPromocodeTypes } from "@/api/promocodeTypesApi";
 
 interface StatItem {
     subtitle: string;
@@ -58,11 +51,7 @@ const TimelineItemsSkeleton = (times: number) => (
         {Array.from({ length: times }, (_, index) => (
             <TimelineItem
                 key={index}
-                header={
-                    (
-                        <Skeleton visible>Промокод на 100 ₽ от 1000 ₽</Skeleton>
-                    ) as any
-                }
+                header={(<Skeleton visible>Промокод на 100 ₽ от 1000 ₽</Skeleton>) as any}
             >
                 <Skeleton visible>1 000 очков</Skeleton>
             </TimelineItem>
@@ -90,9 +79,7 @@ const PrizesPage: React.FC = () => {
         data: promocodesTypes,
     } = useSWR(promocodeTypesUrlEndpoint, getAllPromocodeTypes);
 
-    const [loadingPromocodeId, setLoadingPromocodeId] = React.useState<
-        number | null
-    >(null);
+    const [loadingPromocodeId, setLoadingPromocodeId] = React.useState<number | null>(null);
     const [copiedTypeId, setCopiedTypeId] = React.useState<number | null>(null);
 
     const getPromocode = async (promocode_type_id: number) => {
@@ -122,9 +109,7 @@ const PrizesPage: React.FC = () => {
 
     const getPromocodeStatus = (promocodeType: PromocodeType) => {
         // Check if user already has this promocode
-        const existingPromocode = promocodes?.find(
-            (p) => p.promocode_type_id === promocodeType.id
-        );
+        const existingPromocode = promocodes?.find((p) => p.promocode_type_id === promocodeType.id);
         if (existingPromocode) {
             return "opened";
         }
@@ -132,9 +117,7 @@ const PrizesPage: React.FC = () => {
         // Check if user has enough score
         const requiredScore = promocodeType.score;
         const userScore =
-            promocodeType.type === "record"
-                ? stats?.record_score
-                : stats?.total_score;
+            promocodeType.type === "record" ? stats?.record_score : stats?.total_score;
 
         if (userScore && userScore >= requiredScore) {
             return "ready";
@@ -144,9 +127,7 @@ const PrizesPage: React.FC = () => {
     };
 
     const renderTimelineItems = (promocodeTypes: PromocodeType[]) => {
-        const sortedTypes = [...promocodeTypes].sort(
-            (a, b) => a.score - b.score
-        );
+        const sortedTypes = [...promocodeTypes].sort((a, b) => a.score - b.score);
 
         // Find the last index with status ready or opened
         const lastActiveIndex = sortedTypes.reduce((lastIdx, type, idx) => {
@@ -167,9 +148,7 @@ const PrizesPage: React.FC = () => {
 
             return (
                 <TimelineItem key={type.id} header={header} mode={itemMode}>
-                    {status === "locked" && (
-                        <Text>{formatNumberWithSpaces(type.score)} очков</Text>
-                    )}
+                    {status === "locked" && <Text>{formatNumberWithSpaces(type.score)} очков</Text>}
                     {status === "ready" && (
                         <Button
                             mode="filled"
@@ -182,11 +161,7 @@ const PrizesPage: React.FC = () => {
                     )}
                     {status === "opened" && (
                         <Button
-                            before={
-                                copiedTypeId !== type.id ? (
-                                    <ContentCopyIcon />
-                                ) : undefined
-                            }
+                            before={copiedTypeId !== type.id ? <ContentCopyIcon /> : undefined}
                             mode="bezeled"
                             stretched
                             onClick={() => {
@@ -205,13 +180,8 @@ const PrizesPage: React.FC = () => {
                                             }, 1100);
                                         })
                                         .catch((error) => {
-                                            if (
-                                                error.name !== "NotAllowedError"
-                                            ) {
-                                                console.error(
-                                                    "Failed to copy:",
-                                                    error
-                                                );
+                                            if (error.name !== "NotAllowedError") {
+                                                console.error("Failed to copy:", error);
                                             }
                                         });
                                 }
@@ -219,9 +189,7 @@ const PrizesPage: React.FC = () => {
                         >
                             {copiedTypeId === type.id
                                 ? "Скопированно!"
-                                : promocodes?.find(
-                                      (p) => p.promocode_type_id === type.id
-                                  )?.code}
+                                : promocodes?.find((p) => p.promocode_type_id === type.id)?.code}
                         </Button>
                     )}
                 </TimelineItem>
@@ -251,13 +219,8 @@ const PrizesPage: React.FC = () => {
                                 interactiveAnimation="opacity"
                                 before={stat.icon}
                             >
-                                {showStats &&
-                                    formatNumberWithSpaces(stat.value)}
-                                {!showStats && (
-                                    <Skeleton visible={!showStats}>
-                                        10 000
-                                    </Skeleton>
-                                )}
+                                {showStats && formatNumberWithSpaces(stat.value)}
+                                {!showStats && <Skeleton visible={!showStats}>10 000</Skeleton>}
                             </Cell>
                         ))}
                     </Stack>
@@ -270,9 +233,7 @@ const PrizesPage: React.FC = () => {
                     {showTimeline && (
                         <Timeline>
                             {renderTimelineItems(
-                                promocodesTypes?.filter(
-                                    (pt) => pt.type === "record"
-                                ) ?? []
+                                promocodesTypes?.filter((pt) => pt.type === "record") ?? []
                             )}
                         </Timeline>
                     )}
@@ -286,9 +247,7 @@ const PrizesPage: React.FC = () => {
                     {showTimeline && (
                         <Timeline>
                             {renderTimelineItems(
-                                promocodesTypes?.filter(
-                                    (pt) => pt.type === "total"
-                                ) ?? []
+                                promocodesTypes?.filter((pt) => pt.type === "total") ?? []
                             )}
                         </Timeline>
                     )}

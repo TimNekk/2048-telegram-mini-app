@@ -1,15 +1,15 @@
 .splash {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  text-align: center;
-  z-index: 3;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: calc(var(--pixel-size) * 0.75);
-  /* background-color: rgb(from color-mix(in srgb, var(--tg-theme-destructive-text-color), black 50%) r g b / 0.9); */
-  background-color: rgb(from var(--tg-theme-bg-color) r g b / 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    text-align: center;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: calc(var(--pixel-size) * 0.75);
+    /* background-color: rgb(from color-mix(in srgb, var(--tg-theme-destructive-text-color), black 50%) r g b / 0.9); */
+    background-color: rgb(from var(--tg-theme-bg-color) r g b / 0.9);
 }

@@ -1,4 +1,4 @@
-export type PromocodeTypeType = 'record' | 'total';
+export type PromocodeTypeType = "record" | "total";
 
 export interface PromocodeType {
     id: number;

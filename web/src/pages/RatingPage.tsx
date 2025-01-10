@@ -74,19 +74,10 @@ const RatingPage: React.FC = () => {
         <Page back={true}>
             <List>
                 <Section header="Профиль">
-                    <Cell
-                        before={<PersonIcon />}
-                        subtitle="Имя"
-                        interactiveAnimation="opacity"
-                    >
-                        <Skeleton visible={isMeLoading}>
-                            {visibleNickname}
-                        </Skeleton>
+                    <Cell before={<PersonIcon />} subtitle="Имя" interactiveAnimation="opacity">
+                        <Skeleton visible={isMeLoading}>{visibleNickname}</Skeleton>
                     </Cell>
-                    <ButtonCell
-                        before={<EditIcon />}
-                        onClick={() => setIsModalOpen(true)}
-                    >
+                    <ButtonCell before={<EditIcon />} onClick={() => setIsModalOpen(true)}>
                         Изменить
                     </ButtonCell>
                 </Section>
@@ -96,33 +87,17 @@ const RatingPage: React.FC = () => {
                     footer="Рейтинг игроков с самыми высокими рекордами за последние 24 часа. Попадите в топ и станьте лучшим!"
                 >
                     <Stack>
-                        <Cell
-                            before="🥇"
-                            subtitle="127 350 очков"
-                            interactiveAnimation="opacity"
-                        >
+                        <Cell before="🥇" subtitle="127 350 очков" interactiveAnimation="opacity">
                             Весёлый Пончик
                         </Cell>
-                        <Cell
-                            before="🥈"
-                            subtitle="68 530 очков"
-                            interactiveAnimation="opacity"
-                        >
+                        <Cell before="🥈" subtitle="68 530 очков" interactiveAnimation="opacity">
                             TimNekk
                         </Cell>
-                        <Cell
-                            before="🥉"
-                            subtitle="34 290 очков"
-                            interactiveAnimation="opacity"
-                        >
+                        <Cell before="🥉" subtitle="34 290 очков" interactiveAnimation="opacity">
                             Ваня Фролов
                         </Cell>
                         <Divider />
-                        <Cell
-                            before={54}
-                            subtitle="16 780 очков"
-                            interactiveAnimation="opacity"
-                        >
+                        <Cell before={54} subtitle="16 780 очков" interactiveAnimation="opacity">
                             {visibleNickname}
                         </Cell>
                     </Stack>
@@ -133,33 +108,17 @@ const RatingPage: React.FC = () => {
                     footer="Суммарный рейтинг всех игроков за все время. Чем больше играете и набираете очков, тем выше поднимаетесь!"
                 >
                     <Stack>
-                        <Cell
-                            before="🥇"
-                            subtitle="1 239 000 очков"
-                            interactiveAnimation="opacity"
-                        >
+                        <Cell before="🥇" subtitle="1 239 000 очков" interactiveAnimation="opacity">
                             Весёлый Пончик
                         </Cell>
-                        <Cell
-                            before="🥈"
-                            subtitle="730 000 очков"
-                            interactiveAnimation="opacity"
-                        >
+                        <Cell before="🥈" subtitle="730 000 очков" interactiveAnimation="opacity">
                             TimNekk
                         </Cell>
-                        <Cell
-                            before="🥉"
-                            subtitle="589 000 очков"
-                            interactiveAnimation="opacity"
-                        >
+                        <Cell before="🥉" subtitle="589 000 очков" interactiveAnimation="opacity">
                             Ваня Фролов
                         </Cell>
                         <Divider />
-                        <Cell
-                            before="342"
-                            subtitle="34 000 очков"
-                            interactiveAnimation="opacity"
-                        >
+                        <Cell before="342" subtitle="34 000 очков" interactiveAnimation="opacity">
                             {visibleNickname}
                         </Cell>
                     </Stack>
@@ -177,11 +136,7 @@ const RatingPage: React.FC = () => {
                         header="Введите ваше имя"
                         value={inputNickname}
                         onChange={(e) => setInputNickname(e.target.value)}
-                        status={
-                            validateNickname(inputNickname)
-                                ? "default"
-                                : "error"
-                        }
+                        status={validateNickname(inputNickname) ? "default" : "error"}
                         after={
                             <Tappable
                                 Component="div"
