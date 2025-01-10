@@ -151,7 +151,7 @@ const RatingPage: React.FC = () => {
     );
 
     return (
-        <Page back={true}>
+        <Page back={false}>
             <List>
                 <Section header="Профиль">
                     <Cell before={<PersonIcon />} subtitle="Имя" interactiveAnimation="opacity">
