@@ -3,6 +3,7 @@ import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import GamePage from '@/pages/GamePage';
 import PrizesPage from '@/pages/PrizesPage';
+import RatingPage from '@/pages/RatingPage';
 
 interface Route {
   path: string;
@@ -22,6 +23,12 @@ export const routes: Route[] = [
     path: '/prizes', 
     Component: PrizesPage, 
     title: 'Призы',
+    icon: <EmojiEventsIcon />
+  },
+  {
+    path: '/rating',
+    Component: RatingPage,
+    title: 'Рейтинг',
     icon: <EmojiEventsIcon />
   }
 ];
