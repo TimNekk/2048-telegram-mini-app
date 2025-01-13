@@ -19,8 +19,7 @@ const BottomNavBar: React.FC = () => {
                 text="Играть"
                 selected={location.pathname === "/game"}
                 onClick={() => {
-                    if (hapticFeedback.impactOccurred.isAvailable())
-                        hapticFeedback.impactOccurred("light");
+                    hapticFeedback.impactOccurred.ifAvailable("light");
                     navigate("/game");
                 }}
             >
@@ -31,8 +30,7 @@ const BottomNavBar: React.FC = () => {
                 text="Призы"
                 selected={location.pathname === "/prizes"}
                 onClick={() => {
-                    if (hapticFeedback.impactOccurred.isAvailable())
-                        hapticFeedback.impactOccurred("light");
+                    hapticFeedback.impactOccurred.ifAvailable("light");
                     navigate("/prizes");
                 }}
                 onMouseEnter={preloadPrizesPage}
@@ -45,8 +43,7 @@ const BottomNavBar: React.FC = () => {
                 text="Рейтинг"
                 selected={location.pathname === "/rating"}
                 onClick={() => {
-                    if (hapticFeedback.impactOccurred.isAvailable())
-                        hapticFeedback.impactOccurred("light");
+                    hapticFeedback.impactOccurred.ifAvailable("light");
                     navigate("/rating");
                 }}
                 onMouseEnter={preloadRatingPage}

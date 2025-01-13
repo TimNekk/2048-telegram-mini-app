@@ -8,7 +8,7 @@ export default function Splash({ heading = "You lost!" }) {
     const { startGame } = useContext(GameContext);
 
     const handleStartGame = () => {
-        if (hapticFeedback.impactOccurred.isAvailable()) hapticFeedback.impactOccurred("medium");
+        hapticFeedback.impactOccurred.ifAvailable("medium");
         void startGame();
     };
 
