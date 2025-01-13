@@ -109,9 +109,12 @@ const RatingPage: React.FC = () => {
         isLoading: boolean;
         error: any;
         data?: RatingPlace[];
-    }> = ({ title, footer, isLoading, error, data }) => (
+        noDataText: string;
+    }> = ({ title, footer, isLoading, error, data, noDataText }) => (
         <Section header={title} footer={footer}>
-            <Skeleton visible={isLoading || error != null}>
+            <Skeleton visible={isLoading || error}>
+                {error && <Cell>{error.message}</Cell>}
+                {!error && data?.length === 0 && <Cell>{noDataText}</Cell>}
                 {!error &&
                     data
                         ?.sort((a, b) => a.place - b.place)
@@ -155,7 +158,7 @@ const RatingPage: React.FC = () => {
             <List>
                 <Section header="Профиль">
                     <Cell before={<PersonIcon />} subtitle="Имя" interactiveAnimation="opacity">
-                        <Skeleton visible={isMeLoading}>{visibleNickname}</Skeleton>
+                        <Skeleton visible={isMeLoading || meError}>{visibleNickname}</Skeleton>
                     </Cell>
                     <ButtonCell
                         before={<EditIcon />}
@@ -175,6 +178,7 @@ const RatingPage: React.FC = () => {
                     isLoading={isDailyRatingLoading}
                     error={dailyRatingError}
                     data={dailyRating}
+                    noDataText="Сегодня ещё никто не играл, будь первым!"
                 />
 
                 <RatingSection
@@ -183,6 +187,7 @@ const RatingPage: React.FC = () => {
                     isLoading={isTotalRatingLoading}
                     error={totalRatingError}
                     data={totalRating}
+                    noDataText="Никто ещё не играл, будь первым!"
                 />
             </List>
 
