@@ -12,7 +12,7 @@ import { mergeAnimationDuration, tileCountPerDimension } from "@/components/Game
 import { Tile } from "@/components/Game/models/tile";
 import gameReducer, { initialState } from "@/components/Game/reducers/game-reducer";
 import { hapticFeedback } from "@telegram-apps/sdk-react";
-import { startNewGame, updateGame } from "@/api/gamesApi";
+import { gamesUrlEndpoint, startNewGame, updateGame } from "@/api/gamesApi";
 import { Game } from "@/models/game";
 
 type MoveDirection = "move_up" | "move_down" | "move_left" | "move_right";
@@ -105,7 +105,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
         initializationPromise.current = (async () => {
             try {
-                const newGame = await startNewGame();
+                const newGame = await startNewGame([gamesUrlEndpoint]);
                 dispatch({ type: "reset_game" });
                 dispatch({ type: "update_status", status: "ongoing" });
                 dispatch({ type: "set_game_id", gameId: newGame.id.toString() });
@@ -141,9 +141,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
     useEffect(() => {
         if (gameState.hasChanged) {
             setTimeout(() => {
-                if (hapticFeedback.selectionChanged.isAvailable()) {
-                    hapticFeedback.selectionChanged();
-                }
+                hapticFeedback.selectionChanged.ifAvailable();
                 dispatch({ type: "clean_up" });
                 appendRandomTile();
             }, mergeAnimationDuration);
@@ -175,7 +173,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
                     if (!currentGameId) {
                         console.log("No game ID found, creating new game");
-                        const newGame = await startNewGame();
+                        const newGame = await startNewGame([gamesUrlEndpoint]);
                         currentGameId = newGame.id.toString();
                         console.log("Created new game with ID:", currentGameId);
                     }
@@ -186,7 +184,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
                         status: "finished",
                     };
 
-                    await updateGame(currentGameId, gameUpdate);
+                    await updateGame(gamesUrlEndpoint, currentGameId, gameUpdate);
                     console.log("Successfully updated game score and status");
                 } catch (error) {
                     console.error("Error in game update process:", error);
@@ -212,7 +210,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
                 const gameUpdate: Partial<Game> = {
                     score: gameState.score,
                 };
-                updateGame(gameState.gameId, gameUpdate).catch((error) => {
+                updateGame(gamesUrlEndpoint, gameState.gameId, gameUpdate).catch((error) => {
                     console.error("Error updating game score:", error);
                 });
             }
@@ -242,7 +240,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
             const gameUpdate: Partial<Game> = {
                 score: gameState.score,
             };
-            updateGame(gameState.gameId, gameUpdate).catch((error) => {
+            updateGame(gamesUrlEndpoint, gameState.gameId, gameUpdate).catch((error) => {
                 console.error("Error updating game score:", error);
             });
         }

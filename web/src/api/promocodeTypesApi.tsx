@@ -5,7 +5,7 @@ const promocodeTypesApi = apiClient;
 
 export const promocodeTypesUrlEndpoint = "/promocode-types";
 
-export const getAllPromocodeTypes = async (): Promise<PromocodeType[]> => {
-    const response = await promocodeTypesApi.get<PromocodeType[]>(promocodeTypesUrlEndpoint);
+export const getAllPromocodeTypes = async ([url]: [string]): Promise<PromocodeType[]> => {
+    const response = await promocodeTypesApi.get<PromocodeType[]>(url);
     return response.data;
 };
