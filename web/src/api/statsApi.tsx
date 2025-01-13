@@ -5,7 +5,7 @@ const statsApi = apiClient;
 
 export const statsUrlEndpoint = "/stats";
 
-export const getUserStats = async (): Promise<Stats> => {
-    const response = await statsApi.get<Stats>(statsUrlEndpoint);
+export const getUserStats = async ([url]: [string]): Promise<Stats> => {
+    const response = await statsApi.get<Stats>(url);
     return response.data;
 };

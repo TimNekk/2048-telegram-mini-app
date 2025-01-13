@@ -5,12 +5,16 @@ const gamesApi = apiClient;
 
 export const gamesUrlEndpoint = "/games";
 
-export const startNewGame = async (): Promise<Game> => {
-    const response = await gamesApi.post<Game>(gamesUrlEndpoint);
+export const startNewGame = async ([url]: [string]): Promise<Game> => {
+    const response = await gamesApi.post<Game>(url);
     return response.data;
 };
 
-export const updateGame = async (gameId: string, gameUpdate: Partial<Game>): Promise<Game> => {
-    const response = await gamesApi.patch<Game>(`${gamesUrlEndpoint}/${gameId}`, gameUpdate);
+export const updateGame = async (
+    url: string,
+    gameId: string,
+    gameUpdate: Partial<Game>
+): Promise<Game> => {
+    const response = await gamesApi.patch<Game>(`${url}/${gameId}`, gameUpdate);
     return response.data;
 };
