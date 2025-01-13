@@ -7,7 +7,7 @@ import { statsUrlEndpoint, getUserStats } from "@/api/statsApi";
 import { TimelineItem } from "@telegram-apps/telegram-ui/dist/components/Blocks/Timeline/components/TimelineItem/TimelineItem";
 import { formatNumberWithSpaces } from "@/helper/formatter";
 import { hapticFeedback } from "@telegram-apps/sdk-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CopyButton } from "@/components/CopyButton";
 
 type PromocodesSection = {
@@ -53,12 +53,21 @@ export const PromocodesSection = ({ header, footer, type }: PromocodesSection) =
         isLoading: isPromocodesTypesLoading,
         error: promocodesTypesError,
         data: promocodeTypes,
-    } = useSWR([promocodeTypesUrlEndpoint], getAllPromocodeTypes, {
-        onSuccess: (data) =>
-            data.filter((pt) => pt.type === type).sort((a, b) => a.score - b.score),
-    });
+    } = useSWR([promocodeTypesUrlEndpoint], getAllPromocodeTypes);
+
+    const [processedPromocodeTypes, setProcessedPromocodeTypes] = useState<PromocodeType[] | null>(
+        null
+    );
 
     const [loadingPromocodeId, setLoadingPromocodeId] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (promocodeTypes) {
+            setProcessedPromocodeTypes(
+                promocodeTypes.filter((pt) => pt.type === type).sort((a, b) => a.score - b.score)
+            );
+        }
+    }, [promocodeTypes]);
 
     const getPromocodeStatus = (promocodeType: PromocodeType) => {
         const existingPromocode = promocodes?.find((p) => p.promocode_type_id === promocodeType.id);
@@ -77,7 +86,7 @@ export const PromocodesSection = ({ header, footer, type }: PromocodesSection) =
         return "locked";
     };
 
-    const lastActiveIndex = promocodeTypes?.reduce((lastIdx, type, idx) => {
+    const lastActiveIndex = processedPromocodeTypes?.reduce((lastIdx, type, idx) => {
         const status = getPromocodeStatus(type);
         return status === "ready" || status === "opened" ? idx : lastIdx;
     }, -1);
@@ -108,13 +117,14 @@ export const PromocodesSection = ({ header, footer, type }: PromocodesSection) =
         !isPromocodesLoading &&
         !promocodesError &&
         !isPromocodesTypesLoading &&
-        !promocodesTypesError;
+        !promocodesTypesError &&
+        processedPromocodeTypes;
 
     return (
         <Section header={header} footer={footer}>
             {showTimeline && (
                 <Timeline>
-                    {promocodeTypes!.map((type, index) => {
+                    {processedPromocodeTypes!.map((type, index) => {
                         const status = getPromocodeStatus(type);
                         const header = `Промокод на ${type.discount} ₽ от ${type.min_order} ₽`;
                         const code = promocodes?.find((p) => p.promocode_type_id === type.id)?.code;
