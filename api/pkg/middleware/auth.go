@@ -1,5 +1,7 @@
 package middleware
 
+import "fmt"
+
 import (
 	"context"
 	"net/http"
@@ -52,8 +54,8 @@ func TelegramAuth(token string) echo.MiddlewareFunc {
 
 			// Then validate it
 			if err := initdata.Validate(authData, token, 48*time.Hour); err != nil {
-				c.Logger().Debug("Auth validation failed for date: ", initData.AuthDateRaw)
-				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid init data signature")
+				c.Logger().Warn("Auth validation failed for date: ", initData.AuthDateRaw)
+				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid init data signature, authDate: "+fmt.Sprint(initData.AuthDateRaw))
 			}
 
 			// Store validated init data in context
