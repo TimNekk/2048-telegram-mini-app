@@ -53,7 +53,7 @@ func TelegramAuth(token string) echo.MiddlewareFunc {
 			}
 
 			// Then validate it
-			if err := initdata.Validate(authData, token, 48*time.Hour); err != nil {
+			if err := initdata.Validate(authData, token, 7*24*time.Hour); err != nil {
 				c.Logger().Warn("Auth validation failed for date: ", initData.AuthDateRaw)
 				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid init data signature, authDate: "+fmt.Sprint(initData.AuthDateRaw))
 			}
