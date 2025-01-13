@@ -9,11 +9,11 @@ type User struct {
 	Username  *string   `json:"username" db:"username"`
 	FirstName *string   `json:"first_name" db:"first_name"`
 	LastName  *string   `json:"last_name" db:"last_name"`
-	Nickname  *string   `json:"nickname" db:"nickname"`
+	Nickname  string    `json:"nickname" db:"nickname"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
-func NewUser(id int64, username, firstName, lastName, nickname *string) *User {
+func NewUser(id int64, username, firstName, lastName *string, nickname string) *User {
 	return &User{
 		ID:        id,
 		Username:  username,

@@ -40,6 +40,12 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
+	// Make nickname column required
+	log.Println("Making nickname column required...")
+	if _, err := tx.Exec(makeNicknameRequired); err != nil {
+		return err
+	}
+
 	// Commit the transaction
 	if err := tx.Commit(); err != nil {
 		return err
@@ -93,4 +99,8 @@ CREATE TABLE IF NOT EXISTS promocodes (
 
 const addNicknameToUsersTable = `
 ALTER TABLE users ADD COLUMN IF NOT EXISTS nickname TEXT;
+`
+
+const makeNicknameRequired = `
+ALTER TABLE users ALTER COLUMN nickname SET NOT NULL;
 `
