@@ -14,6 +14,10 @@ import gameReducer, { initialState } from "@/components/Game/reducers/game-reduc
 import { hapticFeedback } from "@telegram-apps/sdk-react";
 import { gamesUrlEndpoint, startNewGame, updateGame } from "@/api/gamesApi";
 import { Game } from "@/models/game";
+import { mutate } from "swr";
+import { statsUrlEndpoint } from "@/api/statsApi";
+import { ratingUrlEndpoint } from "@/api/ratingApi";
+import { ratingLength } from "@/constants";
 
 type MoveDirection = "move_up" | "move_down" | "move_left" | "move_right";
 
@@ -27,6 +31,17 @@ export const GameContext = createContext({
 });
 
 export default function GameProvider({ children }: PropsWithChildren) {
+    const updateGameWithMutations = (gameId: string, gameUpdate: Partial<Game>) => {
+        try {
+            updateGame(gamesUrlEndpoint, gameId, gameUpdate);
+            mutate([statsUrlEndpoint]);
+            mutate([ratingUrlEndpoint, "daily", ratingLength]);
+            mutate([ratingUrlEndpoint, "total", ratingLength]);
+        } catch (error) {
+            console.error("Error in game update process:", error);
+        }
+    };
+
     const loadSavedState = () => {
         try {
             const savedState = localStorage.getItem("gameState");
@@ -184,7 +199,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
                         status: "finished",
                     };
 
-                    await updateGame(gamesUrlEndpoint, currentGameId, gameUpdate);
+                    updateGameWithMutations(currentGameId, gameUpdate);
                     console.log("Successfully updated game score and status");
                 } catch (error) {
                     console.error("Error in game update process:", error);
@@ -210,9 +225,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
                 const gameUpdate: Partial<Game> = {
                     score: gameState.score,
                 };
-                updateGame(gamesUrlEndpoint, gameState.gameId, gameUpdate).catch((error) => {
-                    console.error("Error updating game score:", error);
-                });
+                updateGameWithMutations(gameState.gameId, gameUpdate);
             }
         };
 
@@ -227,23 +240,21 @@ export default function GameProvider({ children }: PropsWithChildren) {
 
     // Save game score when navigating away from game page
     const location = useLocation();
-    useEffect(() => {
-        console.log("Location changed:", {
-            pathname: location.pathname,
-            gameId: gameState.gameId,
-            status: gameState.status,
-            score: gameState.score,
-        });
+    const prevLocationRef = useRef(location);
 
-        if (location.pathname !== "/game" && gameState.gameId && gameState.status === "ongoing") {
+    useEffect(() => {
+        const wasOnGamePage = prevLocationRef.current.pathname === "/game";
+        const isLeavingGamePage = wasOnGamePage && location.pathname !== "/game";
+        
+        if (isLeavingGamePage && gameState.gameId && gameState.status === "ongoing") {
             console.log("Saving score on navigation:", gameState.score);
             const gameUpdate: Partial<Game> = {
                 score: gameState.score,
             };
-            updateGame(gamesUrlEndpoint, gameState.gameId, gameUpdate).catch((error) => {
-                console.error("Error updating game score:", error);
-            });
+            updateGameWithMutations(gameState.gameId, gameUpdate);
         }
+        
+        prevLocationRef.current = location;
     }, [location.pathname, gameState.gameId, gameState.score, gameState.status]);
 
     const checkGameState = () => {

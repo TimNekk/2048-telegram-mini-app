@@ -33,16 +33,6 @@ func (r *gameRepository) Create(ctx context.Context, game *model.Game) error {
 	}
 	defer tx.Rollback()
 
-	// Mark all in-progress games as skipped
-	skipQuery := `
-		UPDATE games 
-		SET status = 'skipped'
-		WHERE user_id = $1 AND status = 'in_progress'
-	`
-	if _, err := tx.ExecContext(ctx, skipQuery, game.UserID); err != nil {
-		return err
-	}
-
 	// Create new game
 	createQuery := `
 		INSERT INTO games (user_id, status, score, created_at)
@@ -67,7 +57,7 @@ func (r *gameRepository) Create(ctx context.Context, game *model.Game) error {
 
 func (r *gameRepository) GetByID(ctx context.Context, id int64) (*model.Game, error) {
 	query := `
-		SELECT id, user_id, score, status, created_at
+		SELECT id, user_id, score, status, created_at, updated_at
 		FROM games
 		WHERE id = $1
 	`
@@ -79,6 +69,7 @@ func (r *gameRepository) GetByID(ctx context.Context, id int64) (*model.Game, er
 		&game.Score,
 		&game.Status,
 		&game.CreatedAt,
+		&game.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -157,7 +148,7 @@ func (r *gameRepository) GetDailyRating(ctx context.Context, limit int, userID i
 			FROM
 				games g
 			WHERE
-				g.created_at >= NOW() - INTERVAL '24 HOURS'
+				g.updated_at >= NOW() - INTERVAL '24 HOURS'
 			GROUP BY
 				g.user_id
 		)

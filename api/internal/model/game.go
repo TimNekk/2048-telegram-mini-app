@@ -18,13 +18,16 @@ type Game struct {
 	Score     int        `json:"score" db:"score"`
 	Status    GameStatus `json:"status" db:"status"`
 	CreatedAt time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
 }
 
 func NewGame(userID int64) *Game {
+	now := time.Now()
 	return &Game{
 		UserID:    userID,
 		Score:     0,
 		Status:    GameStatusInProgress,
-		CreatedAt: time.Now(),
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 }
