@@ -1,15 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { backButton } from "@telegram-apps/sdk-react";
+import { swipeBehavior } from "@telegram-apps/sdk";
 import { PropsWithChildren, useEffect } from "react";
 
 export function Page({
     children,
     back = true,
+    swipeable = true,
 }: PropsWithChildren<{
     /**
      * True if it is allowed to go back from this page.
      */
     back?: boolean;
+    swipeable?: boolean;
 }>) {
     const navigate = useNavigate();
 
@@ -22,6 +25,16 @@ export function Page({
         }
         backButton.hide();
     }, [back]);
+
+    useEffect(() => {
+        if (swipeable) {
+            swipeBehavior.enableVertical.ifAvailable();
+            console.log("Enabling swipe behavior");
+        } else {
+            swipeBehavior.disableVertical.ifAvailable();
+            console.log("Disabling swipe behavior");
+        }
+    }, [swipeBehavior]);
 
     return (
         <div
