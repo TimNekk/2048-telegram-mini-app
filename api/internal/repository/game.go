@@ -33,16 +33,6 @@ func (r *gameRepository) Create(ctx context.Context, game *model.Game) error {
 	}
 	defer tx.Rollback()
 
-	// Mark all in-progress games as skipped
-	skipQuery := `
-		UPDATE games 
-		SET status = 'skipped'
-		WHERE user_id = $1 AND status = 'in_progress'
-	`
-	if _, err := tx.ExecContext(ctx, skipQuery, game.UserID); err != nil {
-		return err
-	}
-
 	// Create new game
 	createQuery := `
 		INSERT INTO games (user_id, status, score, created_at)
