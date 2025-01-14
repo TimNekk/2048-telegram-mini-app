@@ -46,6 +46,12 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
+	// Add updated_at column to games table
+	log.Println("Adding updated_at column to games table...")
+	if _, err := tx.Exec(addUpdatedAtToGamesTable); err != nil {
+		return err
+	}
+
 	// Commit the transaction
 	if err := tx.Commit(); err != nil {
 		return err
@@ -103,4 +109,22 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS nickname TEXT;
 
 const makeNicknameRequired = `
 ALTER TABLE users ALTER COLUMN nickname SET NOT NULL;
+`
+
+const addUpdatedAtToGamesTable = `
+ALTER TABLE games ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW();
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+DROP TRIGGER IF EXISTS update_games_updated_at ON games;
+CREATE TRIGGER update_games_updated_at
+    BEFORE UPDATE ON games
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
 `

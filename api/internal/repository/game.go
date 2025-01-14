@@ -57,7 +57,7 @@ func (r *gameRepository) Create(ctx context.Context, game *model.Game) error {
 
 func (r *gameRepository) GetByID(ctx context.Context, id int64) (*model.Game, error) {
 	query := `
-		SELECT id, user_id, score, status, created_at
+		SELECT id, user_id, score, status, created_at, updated_at
 		FROM games
 		WHERE id = $1
 	`
@@ -69,6 +69,7 @@ func (r *gameRepository) GetByID(ctx context.Context, id int64) (*model.Game, er
 		&game.Score,
 		&game.Status,
 		&game.CreatedAt,
+		&game.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -147,7 +148,7 @@ func (r *gameRepository) GetDailyRating(ctx context.Context, limit int, userID i
 			FROM
 				games g
 			WHERE
-				g.created_at >= NOW() - INTERVAL '24 HOURS'
+				g.updated_at >= NOW() - INTERVAL '24 HOURS'
 			GROUP BY
 				g.user_id
 		)
