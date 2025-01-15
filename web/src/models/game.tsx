@@ -4,4 +4,5 @@ export interface Game {
     score: number;
     status: string;
     created_at?: Date;
+    updated_at?: Date;
 }
