@@ -27,8 +27,8 @@ const GamePage: React.FC = () => {
     };
 
     return (
-        <MobileSwiper onSwipe={handleSwipe} disabled={status === "lost"}>
-            <Page back={false} swipeable={false}>
+        <Page back={false} swipeable={false}>
+            <MobileSwiper onSwipe={handleSwipe} disabled={status === "lost"}>
                 <List>
                     <Score />
 
@@ -43,8 +43,8 @@ const GamePage: React.FC = () => {
                         <Board />
                     </div>
                 </List>
-            </Page>
-        </MobileSwiper>
+            </MobileSwiper>
+        </Page>
     );
 };
 
