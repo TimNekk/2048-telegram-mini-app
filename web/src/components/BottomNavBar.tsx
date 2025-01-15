@@ -13,7 +13,13 @@ const BottomNavBar: React.FC = () => {
     const location = useLocation();
 
     return (
-        <Tabbar>
+        <Tabbar
+            style={{
+                zIndex: 999,
+                bottom: "var(--tg-viewport-content-safe-area-inset-bottom)",
+                backdropFilter: "blur(2px)",
+            }}
+        >
             <Tabbar.Item
                 key={"/game"}
                 text="Играть"
