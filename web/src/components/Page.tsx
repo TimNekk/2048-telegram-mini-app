@@ -54,7 +54,7 @@ export function Page({
                     height: "auto",
                     margin: "0.9rem auto",
                     display: "block",
-                    color: "var(--tg-theme-accent-text-color)",
+                    color: "#ff462d",
                 }}
             >
                 <path
