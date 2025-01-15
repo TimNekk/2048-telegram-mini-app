@@ -77,5 +77,14 @@ export default function MobileSwiper({ children, onSwipe, disabled }: MobileSwip
         };
     }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
-    return <div ref={wrapperRef}>{children}</div>;
+    return (
+        <div
+            ref={wrapperRef}
+            style={{
+                height: "100%",
+            }}
+        >
+            {children}
+        </div>
+    );
 }
