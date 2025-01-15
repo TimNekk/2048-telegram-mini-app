@@ -37,7 +37,6 @@ export function Page({
         <Stack
             style={{
                 height: "var(--tg-viewport-height)",
-                width: "var(--tg-viewport-width)",
             }}
         >
             <header
