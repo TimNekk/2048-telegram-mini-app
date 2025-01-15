@@ -108,6 +108,8 @@ export function Page({
             <main
                 style={{
                     paddingBottom: "82px",
+                    height: "100%",
+                    minHeight: "fit-content",
                 }}
             >
                 {children}
