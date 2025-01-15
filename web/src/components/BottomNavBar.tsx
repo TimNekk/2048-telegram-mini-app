@@ -16,7 +16,7 @@ const BottomNavBar: React.FC = () => {
         <Tabbar
             style={{
                 zIndex: 999,
-                bottom: "var(--tg-viewport-content-safe-area-inset-bottom)",
+                bottom: "var(--tg-viewport-safe-area-inset-bottom)",
                 backdropFilter: "blur(2px)",
             }}
         >
