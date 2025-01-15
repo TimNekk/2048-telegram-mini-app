@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import Score from "@/components/Game/components/score";
 import Board from "@/components/Game/components/board";
 import "@/components/Game/styles/globals.css";
-import { List } from "@telegram-apps/telegram-ui";
+import { List, Section } from "@telegram-apps/telegram-ui";
 import { Page } from "@/components/Page";
 import { GameContext } from "@/components/Game/context/game-context";
 import MobileSwiper, { SwipeInput } from "@/components/Game/components/mobile-swiper";
@@ -42,6 +42,33 @@ const GamePage: React.FC = () => {
                     >
                         <Board />
                     </div>
+
+                    <Section>
+                        <p>
+                            content-safe-area-inset-top:{" "}
+                            {getComputedStyle(document.documentElement).getPropertyValue(
+                                "--tg-viewport-content-safe-area-inset-top"
+                            )}
+                        </p>
+                        <p>
+                            content-safe-area-inset-bottom:{" "}
+                            {getComputedStyle(document.documentElement).getPropertyValue(
+                                "--tg-viewport-content-safe-area-inset-bottom"
+                            )}
+                        </p>
+                        <p>
+                            safe-area-inset-top:{" "}
+                            {getComputedStyle(document.documentElement).getPropertyValue(
+                                "--tg-viewport-safe-area-inset-top"
+                            )}
+                        </p>
+                        <p>
+                            safe-area-inset-bottom:{" "}
+                            {getComputedStyle(document.documentElement).getPropertyValue(
+                                "--tg-viewport-safe-area-inset-bottom"
+                            )}
+                        </p>
+                    </Section>
                 </List>
             </MobileSwiper>
         </Page>
