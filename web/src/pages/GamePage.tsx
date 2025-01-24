@@ -32,17 +32,6 @@ const GamePage: React.FC = () => {
                 <List>
                     <Score />
 
-                    <div
-                        style={{
-                            marginTop: "1em",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Board />
-                    </div>
-
                     <Section>
                         <p>
                             content-safe-area-inset-top:{" "}
@@ -69,6 +58,17 @@ const GamePage: React.FC = () => {
                             )}
                         </p>
                     </Section>
+
+                    <div
+                        style={{
+                            marginTop: "1em",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Board />
+                    </div>
                 </List>
             </MobileSwiper>
         </Page>
