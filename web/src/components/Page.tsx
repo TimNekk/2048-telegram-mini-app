@@ -106,7 +106,7 @@ export function Page({
             </header>
             <main
                 style={{
-                    paddingBottom: "calc(82px + var(--tg-viewport-safe-area-inset-bottom))",
+                    paddingBottom: "calc(82px + var(--tg-viewport-safe-area-inset-bottom, 0))",
                     height: "100%",
                     minHeight: "fit-content",
                 }}
