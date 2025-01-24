@@ -34,11 +34,7 @@ export function Page({
     }, [swipeBehavior]);
 
     return (
-        <Stack
-            style={{
-                height: "var(--tg-viewport-height)",
-            }}
-        >
+        <Stack>
             <header
                 style={{
                     display: "flex",
