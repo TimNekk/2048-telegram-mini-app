@@ -16,6 +16,8 @@ export function App() {
             appearance={isDark ? "dark" : "light"}
             platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
         >
+            <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+            <script>eruda.init()</script>
             <HashRouter>
                 <GameProvider>
                     <Routes>
