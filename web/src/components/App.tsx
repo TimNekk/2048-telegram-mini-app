@@ -4,6 +4,8 @@ import { Navigate, Route, Routes, HashRouter } from "react-router-dom";
 
 import { routes } from "@/navigation/routes.tsx";
 import GameProvider from "@/components/Game/context/game-context";
+import eruda from "eruda";
+import { useEffect } from "react";
 
 export function App() {
     const lp = useLaunchParams();
@@ -11,13 +13,15 @@ export function App() {
 
     viewport.expand.ifAvailable();
 
+    useEffect(() => {
+        eruda.init();
+    }, []);
+
     return (
         <AppRoot
             appearance={isDark ? "dark" : "light"}
             platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
         >
-            <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-            <script>eruda.init()</script>
             <HashRouter>
                 <GameProvider>
                     <Routes>
