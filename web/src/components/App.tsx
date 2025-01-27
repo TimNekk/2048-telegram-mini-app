@@ -1,4 +1,4 @@
-import { useLaunchParams, miniApp, useSignal } from "@telegram-apps/sdk-react";
+import { useLaunchParams, miniApp, useSignal, viewport } from "@telegram-apps/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 import { Navigate, Route, Routes, HashRouter } from "react-router-dom";
 import { routes } from "@/navigation/routes.tsx";
@@ -12,20 +12,19 @@ export function App() {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // setTimeout(() => {
-        //     viewport.expand.ifAvailable();
-        // }, 100);
-
+        viewport.expand.ifAvailable();
         eruda.init();
 
-        const handleScroll = () => {};
+        setTimeout(() => {
+            const handleScroll = () => {};
 
-        const container = scrollContainerRef.current;
-        container?.addEventListener("scroll", handleScroll);
+            const container = scrollContainerRef.current;
+            container?.addEventListener("scroll", handleScroll);
 
-        return () => {
-            container?.removeEventListener("scroll", handleScroll);
-        };
+            return () => {
+                container?.removeEventListener("scroll", handleScroll);
+            };
+        }, 1000);
     }, []);
 
     return (
