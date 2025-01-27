@@ -36,7 +36,7 @@ export function Page({
     return (
         <Stack
             style={{
-                minHeight: "var(--tg-viewport-height, 100vh)",
+                height: "var(--tg-viewport-height, 100vh)",
             }}
         >
             <header
