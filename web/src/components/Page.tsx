@@ -9,9 +9,11 @@ export function Page({
     children,
     back = true,
     swipeable = true,
+    flexChildren = false,
 }: PropsWithChildren<{
     back?: boolean;
     swipeable?: boolean;
+    flexChildren?: boolean;
 }>) {
     const navigate = useNavigate();
 
@@ -107,6 +109,7 @@ export function Page({
             <main
                 style={{
                     flexGrow: 1,
+                    display: flexChildren ? "flex" : "block",
                 }}
             >
                 {children}
