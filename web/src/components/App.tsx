@@ -10,7 +10,7 @@ import eruda from "eruda";
 export function App() {
     const lp = useLaunchParams();
     const isDark = useSignal(miniApp.isDark);
-    const containerRef = useRef<HTMLDivElement>(null); // Added ref
+    const containerRef = useRef<HTMLDivElement>(null);
 
     viewport.expand.ifAvailable();
 
@@ -18,22 +18,27 @@ export function App() {
         eruda.init();
     }, []);
 
-    // Added scroll control effect
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
-        const handleScroll = () => {
-            const scrollBottom =
-                container.scrollHeight - container.scrollTop - container.clientHeight;
+        const handleScroll = (e: Event) => {
+            const element = e.target as HTMLDivElement;
+            const scrollBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
             const threshold = viewport.safeAreaInsetBottom();
 
             if (scrollBottom < threshold) {
-                container.scrollTop = container.scrollHeight - container.clientHeight - threshold;
+                e.preventDefault();
+                element.scrollTop = element.scrollHeight - element.clientHeight - threshold;
+            }
+
+            if (element.scrollTop < 0) {
+                e.preventDefault();
+                element.scrollTop = 0;
             }
         };
 
-        container.addEventListener("scroll", handleScroll);
+        container.addEventListener("scroll", handleScroll, { passive: false });
         return () => container.removeEventListener("scroll", handleScroll);
     }, []);
 
@@ -42,13 +47,14 @@ export function App() {
             appearance={isDark ? "dark" : "light"}
             platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
         >
-            {/* Added scroll container div */}
             <div
                 ref={containerRef}
                 style={{
                     height: "100dvh",
                     overflowY: "auto",
-                    overscrollBehaviorY: "contain",
+                    overscrollBehavior: "none",
+                    WebkitOverflowScrolling: "touch",
+                    position: "relative",
                 }}
             >
                 <HashRouter>
