@@ -20,7 +20,6 @@ const BottomNavBar: React.FC = () => {
                 bottom: "0",
                 paddingBottom: "var(--tg-viewport-safe-area-inset-bottom, 0px)",
                 backdropFilter: "blur(2px)",
-                height: "82px",
             }}
         >
             <Tabbar.Item
