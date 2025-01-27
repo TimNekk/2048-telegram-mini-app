@@ -48,7 +48,7 @@ export function App() {
                     overflow: "auto",
                     height: "100%",
                     minHeight: "100%",
-                    overscrollBehavior: "contain",
+                    overscrollBehavior: "none",
                 }}
             >
                 <HashRouter>

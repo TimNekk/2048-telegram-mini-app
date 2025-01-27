@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { backButton } from "@telegram-apps/sdk-react";
 import { swipeBehavior } from "@telegram-apps/sdk";
-import { PropsWithChildren, useEffect } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import BottomNavBar from "./BottomNavBar";
 import { Stack } from "@mui/material";
 
@@ -15,6 +15,7 @@ export function Page({
     swipeable?: boolean;
     flexChildren?: boolean;
 }>) {
+    const [navHeight, setNavHeight] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -110,11 +111,12 @@ export function Page({
                 style={{
                     flexGrow: 1,
                     display: flexChildren ? "flex" : "block",
+                    paddingBottom: `calc(${navHeight}px + var(--tg-viewport-safe-area-inset-bottom, 0px))`,
                 }}
             >
                 {children}
             </main>
-            <BottomNavBar />
+            <BottomNavBar onHeightMeasured={setNavHeight} />
         </Stack>
     );
 }
