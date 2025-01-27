@@ -15,6 +15,10 @@ export function App() {
     viewport.expand.ifAvailable();
 
     useEffect(() => {
+        eruda.init();
+    }, []);
+
+    useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
