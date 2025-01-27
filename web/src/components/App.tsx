@@ -1,79 +1,31 @@
 import { useLaunchParams, miniApp, useSignal, viewport } from "@telegram-apps/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 import { Navigate, Route, Routes, HashRouter } from "react-router-dom";
-import { useEffect, useRef } from "react"; // Added useRef
-
 import { routes } from "@/navigation/routes.tsx";
 import GameProvider from "@/components/Game/context/game-context";
 import eruda from "eruda";
+import { useEffect, useRef } from "react";
 
 export function App() {
     const lp = useLaunchParams();
     const isDark = useSignal(miniApp.isDark);
-    const containerRef = useRef<HTMLDivElement>(null); // Added ref
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     viewport.expand.ifAvailable();
 
     useEffect(() => {
         eruda.init();
-    }, []);
 
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
-
-        let touchStartY = 0;
-
-        const handleTouchStart = (e: TouchEvent) => {
-            touchStartY = e.touches[0].clientY;
-        };
-
-        const handleTouchMove = (e: TouchEvent) => {
-            const currentY = e.touches[0].clientY;
-            const deltaY = touchStartY - currentY;
-            touchStartY = currentY;
-
-            const threshold = viewport.safeAreaInsetBottom();
-            const maxScrollTop = container.scrollHeight - container.clientHeight - threshold;
-            const currentScrollTop = container.scrollTop;
-
-            // Prevent scroll down when at bottom
-            if (currentScrollTop >= maxScrollTop && deltaY < 0) {
-                e.preventDefault();
-            }
-        };
-
-        const handleWheel = (e: WheelEvent) => {
-            const threshold = viewport.safeAreaInsetBottom();
-            const maxScrollTop = container.scrollHeight - container.clientHeight - threshold;
-            const currentScrollTop = container.scrollTop;
-
-            // Prevent wheel scroll down when at bottom
-            if (currentScrollTop >= maxScrollTop && e.deltaY > 0) {
-                e.preventDefault();
-            }
-        };
-
-        // Keep existing scroll handler as fallback
+        // Handle scroll events if needed for other purposes
         const handleScroll = () => {
-            const threshold = viewport.safeAreaInsetBottom();
-            const maxScrollTop = container.scrollHeight - container.clientHeight - threshold;
-
-            if (container.scrollTop > maxScrollTop) {
-                container.scrollTop = maxScrollTop;
-            }
+            // Add any scroll-related logic here if needed
         };
 
-        container.addEventListener("touchstart", handleTouchStart, { passive: true });
-        container.addEventListener("touchmove", handleTouchMove, { passive: false });
-        container.addEventListener("wheel", handleWheel, { passive: false });
-        container.addEventListener("scroll", handleScroll);
+        const container = scrollContainerRef.current;
+        container?.addEventListener("scroll", handleScroll);
 
         return () => {
-            container.removeEventListener("touchstart", handleTouchStart);
-            container.removeEventListener("touchmove", handleTouchMove);
-            container.removeEventListener("wheel", handleWheel);
-            container.removeEventListener("scroll", handleScroll);
+            container?.removeEventListener("scroll", handleScroll);
         };
     }, []);
 
@@ -82,13 +34,12 @@ export function App() {
             appearance={isDark ? "dark" : "light"}
             platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
         >
-            {/* Added scroll container div */}
             <div
-                ref={containerRef}
+                ref={scrollContainerRef}
                 style={{
-                    height: "100dvh",
-                    overflowY: "auto",
-                    overscrollBehaviorY: "contain",
+                    overflow: "auto",
+                    height: "100%",
+                    position: "relative",
                 }}
             >
                 <HashRouter>
