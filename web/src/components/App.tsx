@@ -16,9 +16,10 @@ export function App() {
     useEffect(() => {
         eruda.init();
 
-        // Handle scroll events if needed for other purposes
+        // Optional: Add any scroll-related logic you might need later
         const handleScroll = () => {
-            // Add any scroll-related logic here if needed
+            // You can add custom scroll handling here if needed
+            console.log("Scrolling:", scrollContainerRef.current?.scrollTop);
         };
 
         const container = scrollContainerRef.current;
@@ -33,13 +34,19 @@ export function App() {
         <AppRoot
             appearance={isDark ? "dark" : "light"}
             platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
+            style={{
+                height: "100lvh",
+                overflow: "hidden",
+                position: "relative",
+            }}
         >
             <div
                 ref={scrollContainerRef}
                 style={{
                     overflow: "auto",
                     height: "100%",
-                    position: "relative",
+                    minHeight: "100%",
+                    overscrollBehavior: "contain",
                 }}
             >
                 <HashRouter>
