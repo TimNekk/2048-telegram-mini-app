@@ -12,9 +12,9 @@ export function App() {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        setTimeout(() => {
-            viewport.expand.ifAvailable();
-        }, 100);
+        // setTimeout(() => {
+        //     viewport.expand.ifAvailable();
+        // }, 100);
 
         eruda.init();
 
