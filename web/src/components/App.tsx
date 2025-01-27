@@ -11,19 +11,14 @@ export function App() {
     const isDark = useSignal(miniApp.isDark);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-    // Move viewport expansion to useEffect
     useEffect(() => {
-        viewport.expand.ifAvailable();
-    }, []);
+        setTimeout(() => {
+            viewport.expand.ifAvailable();
+        }, 100);
 
-    useEffect(() => {
         eruda.init();
 
-        // Optional: Add any scroll-related logic you might need later
-        const handleScroll = () => {
-            // You can add custom scroll handling here if needed
-            console.log("Scrolling:", scrollContainerRef.current?.scrollTop);
-        };
+        const handleScroll = () => {};
 
         const container = scrollContainerRef.current;
         container?.addEventListener("scroll", handleScroll);
