@@ -12,19 +12,24 @@ export function App() {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        viewport.expand.ifAvailable();
+        const init = async () => {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            if (viewport.expand.isAvailable()) {
+                viewport.expand();
+            }
+        };
+        init();
+
         eruda.init();
 
-        setTimeout(() => {
-            const handleScroll = () => {};
+        const handleScroll = () => {};
 
-            const container = scrollContainerRef.current;
-            container?.addEventListener("scroll", handleScroll);
+        const container = scrollContainerRef.current;
+        container?.addEventListener("scroll", handleScroll);
 
-            return () => {
-                container?.removeEventListener("scroll", handleScroll);
-            };
-        }, 1000);
+        return () => {
+            container?.removeEventListener("scroll", handleScroll);
+        };
     }, []);
 
     return (
