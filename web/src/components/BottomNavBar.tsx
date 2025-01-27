@@ -16,67 +16,68 @@ const BottomNavBar: React.FC<{ onHeightMeasured?: (height: number) => void }> = 
     const tabbarRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!tabbarRef.current || !onHeightMeasured) return;
-
-        const observer = new ResizeObserver((entries) => {
-            for (const entry of entries) {
-                onHeightMeasured(entry.contentRect.height);
-            }
-        });
-
-        observer.observe(tabbarRef.current);
-
-        return () => observer.disconnect();
+        if (tabbarRef.current && onHeightMeasured) {
+            onHeightMeasured(tabbarRef.current.offsetHeight);
+        }
     }, [onHeightMeasured]);
 
     return (
-        <Tabbar
-            // @ts-ignore
+        <div
             ref={tabbarRef}
             style={{
+                position: "fixed",
+                bottom: 0,
+                left: 0,
+                right: 0,
                 zIndex: 999,
                 paddingBottom: "var(--tg-viewport-safe-area-inset-bottom, 0px)",
                 backdropFilter: "blur(2px)",
             }}
         >
-            <Tabbar.Item
-                key={"/game"}
-                text="Играть"
-                selected={location.pathname === "/game"}
-                onClick={() => {
-                    hapticFeedback.impactOccurred.ifAvailable("light");
-                    navigate("/game");
+            <Tabbar
+                style={{
+                    position: "static",
                 }}
             >
-                <VideogameAssetIcon />
-            </Tabbar.Item>
-            <Tabbar.Item
-                key={"/prizes"}
-                text="Призы"
-                selected={location.pathname === "/prizes"}
-                onClick={() => {
-                    hapticFeedback.impactOccurred.ifAvailable("light");
-                    navigate("/prizes");
-                }}
-                onMouseEnter={preloadPrizesPage}
-                onTouchStart={preloadPrizesPage}
-            >
-                <RedeemIcon />
-            </Tabbar.Item>
-            <Tabbar.Item
-                key={"/rating"}
-                text="Рейтинг"
-                selected={location.pathname === "/rating"}
-                onClick={() => {
-                    hapticFeedback.impactOccurred.ifAvailable("light");
-                    navigate("/rating");
-                }}
-                onMouseEnter={preloadRatingPage}
-                onTouchStart={preloadRatingPage}
-            >
-                <EmojiEventsIcon />
-            </Tabbar.Item>
-        </Tabbar>
+                <Tabbar.Item
+                    key={"/game"}
+                    text="Играть"
+                    selected={location.pathname === "/game"}
+                    onClick={() => {
+                        hapticFeedback.impactOccurred.ifAvailable("light");
+                        navigate("/game");
+                    }}
+                >
+                    <VideogameAssetIcon />
+                </Tabbar.Item>
+                <Tabbar.Item
+                    key={"/prizes"}
+                    text="Призы"
+                    selected={location.pathname === "/prizes"}
+                    onClick={() => {
+                        hapticFeedback.impactOccurred.ifAvailable("light");
+                        navigate("/prizes");
+                    }}
+                    onMouseEnter={preloadPrizesPage}
+                    onTouchStart={preloadPrizesPage}
+                >
+                    <RedeemIcon />
+                </Tabbar.Item>
+                <Tabbar.Item
+                    key={"/rating"}
+                    text="Рейтинг"
+                    selected={location.pathname === "/rating"}
+                    onClick={() => {
+                        hapticFeedback.impactOccurred.ifAvailable("light");
+                        navigate("/rating");
+                    }}
+                    onMouseEnter={preloadRatingPage}
+                    onTouchStart={preloadRatingPage}
+                >
+                    <EmojiEventsIcon />
+                </Tabbar.Item>
+            </Tabbar>
+        </div>
     );
 };
 
