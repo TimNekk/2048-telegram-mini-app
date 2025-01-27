@@ -10,36 +10,67 @@ import eruda from "eruda";
 export function App() {
     const lp = useLaunchParams();
     const isDark = useSignal(miniApp.isDark);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null); // Added ref
 
     viewport.expand.ifAvailable();
-
-    useEffect(() => {
-        eruda.init();
-    }, []);
 
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
-        const handleScroll = (e: Event) => {
-            const element = e.target as HTMLDivElement;
-            const scrollBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
+        let touchStartY = 0;
+
+        const handleTouchStart = (e: TouchEvent) => {
+            touchStartY = e.touches[0].clientY;
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            const currentY = e.touches[0].clientY;
+            const deltaY = touchStartY - currentY;
+            touchStartY = currentY;
+
             const threshold = viewport.safeAreaInsetBottom();
+            const maxScrollTop = container.scrollHeight - container.clientHeight - threshold;
+            const currentScrollTop = container.scrollTop;
 
-            if (scrollBottom < threshold) {
+            // Prevent scroll down when at bottom
+            if (currentScrollTop >= maxScrollTop && deltaY < 0) {
                 e.preventDefault();
-                element.scrollTop = element.scrollHeight - element.clientHeight - threshold;
-            }
-
-            if (element.scrollTop < 0) {
-                e.preventDefault();
-                element.scrollTop = 0;
             }
         };
 
-        container.addEventListener("scroll", handleScroll, { passive: false });
-        return () => container.removeEventListener("scroll", handleScroll);
+        const handleWheel = (e: WheelEvent) => {
+            const threshold = viewport.safeAreaInsetBottom();
+            const maxScrollTop = container.scrollHeight - container.clientHeight - threshold;
+            const currentScrollTop = container.scrollTop;
+
+            // Prevent wheel scroll down when at bottom
+            if (currentScrollTop >= maxScrollTop && e.deltaY > 0) {
+                e.preventDefault();
+            }
+        };
+
+        // Keep existing scroll handler as fallback
+        const handleScroll = () => {
+            const threshold = viewport.safeAreaInsetBottom();
+            const maxScrollTop = container.scrollHeight - container.clientHeight - threshold;
+
+            if (container.scrollTop > maxScrollTop) {
+                container.scrollTop = maxScrollTop;
+            }
+        };
+
+        container.addEventListener("touchstart", handleTouchStart, { passive: true });
+        container.addEventListener("touchmove", handleTouchMove, { passive: false });
+        container.addEventListener("wheel", handleWheel, { passive: false });
+        container.addEventListener("scroll", handleScroll);
+
+        return () => {
+            container.removeEventListener("touchstart", handleTouchStart);
+            container.removeEventListener("touchmove", handleTouchMove);
+            container.removeEventListener("wheel", handleWheel);
+            container.removeEventListener("scroll", handleScroll);
+        };
     }, []);
 
     return (
@@ -47,14 +78,13 @@ export function App() {
             appearance={isDark ? "dark" : "light"}
             platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
         >
+            {/* Added scroll container div */}
             <div
                 ref={containerRef}
                 style={{
                     height: "100dvh",
                     overflowY: "auto",
-                    overscrollBehavior: "none",
-                    WebkitOverflowScrolling: "touch",
-                    position: "relative",
+                    overscrollBehaviorY: "contain",
                 }}
             >
                 <HashRouter>
