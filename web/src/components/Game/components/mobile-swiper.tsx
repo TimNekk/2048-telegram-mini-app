@@ -81,7 +81,7 @@ export default function MobileSwiper({ children, onSwipe, disabled }: MobileSwip
         <div
             ref={wrapperRef}
             style={{
-                height: "100%",
+                flexGrow: 1,
             }}
         >
             {children}
