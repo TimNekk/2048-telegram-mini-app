@@ -11,7 +11,10 @@ export function App() {
     const isDark = useSignal(miniApp.isDark);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-    viewport.expand.ifAvailable();
+    // Move viewport expansion to useEffect
+    useEffect(() => {
+        viewport.expand.ifAvailable();
+    }, []);
 
     useEffect(() => {
         eruda.init();
