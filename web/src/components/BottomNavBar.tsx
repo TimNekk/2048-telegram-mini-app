@@ -31,6 +31,7 @@ const BottomNavBar: React.FC<{ onHeightMeasured?: (height: number) => void }> = 
 
     return (
         <Tabbar
+            // @ts-ignore
             ref={tabbarRef}
             style={{
                 zIndex: 999,
