@@ -111,7 +111,7 @@ export function Page({
                 style={{
                     flexGrow: 1,
                     display: flexChildren ? "flex" : "block",
-                    paddingBottom: `calc(${navHeight}px + var(--tg-viewport-safe-area-inset-bottom, 0px))`,
+                    paddingBottom: `${navHeight}px`,
                 }}
             >
                 {children}
