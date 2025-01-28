@@ -30,13 +30,13 @@ const BottomNavBar: React.FC<{ onHeightMeasured?: (height: number) => void }> = 
                 left: 0,
                 right: 0,
                 zIndex: 999,
-                paddingBottom: "var(--tg-viewport-safe-area-inset-bottom, 0px)",
                 backdropFilter: "blur(2px)",
             }}
         >
             <Tabbar
                 style={{
                     position: "static",
+                    paddingBottom: "var(--tg-viewport-safe-area-inset-bottom, 0px)",
                 }}
             >
                 <Tabbar.Item
