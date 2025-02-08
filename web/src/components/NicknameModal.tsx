@@ -101,6 +101,7 @@ export const NicknameModal: React.FC<{
                     stretched
                     disabled={!validateNickname(inputNickname)}
                     onClick={() => {
+                        hapticFeedback.notificationOccurred.ifAvailable("success");
                         if (validateNickname(inputNickname)) {
                             changeNickname(inputNickname);
                             setIsOpen(false);
