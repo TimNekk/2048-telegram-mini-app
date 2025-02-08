@@ -4,6 +4,7 @@ services:
       context: web
       args:
         - VITE_API_URL=${VITE_API_URL}
+        - VITE_MINI_APP_URL=${VITE_MINI_APP_URL}
     image: web:latest
     restart: unless-stopped
     expose:
@@ -28,7 +29,7 @@ services:
       - 8080
     depends_on:
       - database
-  
+
   bot:
     build:
       context: bot
