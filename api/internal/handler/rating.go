@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	initdata "github.com/telegram-mini-apps/init-data-golang"
+	"gitlab.platform.corp/magnitonline/mm/backend/ci-team/2048/api/internal/model"
 	"gitlab.platform.corp/magnitonline/mm/backend/ci-team/2048/api/internal/service"
 )
 
@@ -35,8 +36,23 @@ func (h *RatingHandler) GetRating(c echo.Context) error {
 
 	ratingType := c.QueryParam("type")
 
+	scope := c.QueryParam("scope")
+	if scope == "" {
+		scope = "global"
+	}
+
 	if ratingType == "daily" {
-		rating, err := h.ratingService.GetDailyRating(c.Request().Context(), limitInt, userID)
+		var rating []model.RatingPlace
+		var err error
+
+		switch scope {
+		case "global":
+			rating, err = h.ratingService.GetDailyRating(c.Request().Context(), limitInt, userID, false)
+		case "friends":
+			rating, err = h.ratingService.GetDailyRating(c.Request().Context(), limitInt, userID, true)
+		default:
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid scope")
+		}
 
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -44,7 +60,17 @@ func (h *RatingHandler) GetRating(c echo.Context) error {
 
 		return c.JSON(http.StatusOK, rating)
 	} else if ratingType == "total" {
-		rating, err := h.ratingService.GetTotalRating(c.Request().Context(), limitInt, userID)
+		var rating []model.RatingPlace
+		var err error
+
+		switch scope {
+		case "global":
+			rating, err = h.ratingService.GetTotalRating(c.Request().Context(), limitInt, userID, false)
+		case "friends":
+			rating, err = h.ratingService.GetTotalRating(c.Request().Context(), limitInt, userID, true)
+		default:
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid scope")
+		}
 
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
