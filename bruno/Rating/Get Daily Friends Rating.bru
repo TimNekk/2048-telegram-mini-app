@@ -1,0 +1,17 @@
+meta {
+  name: Get Daily Friends Rating
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://localhost:8080/rating?type=daily&scope=friends&limit=3
+  body: none
+  auth: none
+}
+
+params:query {
+  type: daily
+  scope: friends
+  limit: 3
+}

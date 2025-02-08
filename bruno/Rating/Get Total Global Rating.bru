@@ -1,0 +1,17 @@
+meta {
+  name: Get Total Global Rating
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/rating?type=total&scope=global&limit=3
+  body: none
+  auth: none
+}
+
+params:query {
+  type: total
+  scope: global
+  limit: 3
+}

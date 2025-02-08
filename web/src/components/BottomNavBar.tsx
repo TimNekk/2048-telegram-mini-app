@@ -29,7 +29,7 @@ const BottomNavBar: React.FC<{ onHeightMeasured?: (height: number) => void }> = 
                 bottom: 0,
                 left: 0,
                 right: 0,
-                zIndex: 999,
+                zIndex: 2,
                 backdropFilter: "blur(2px)",
             }}
         >
@@ -71,8 +71,8 @@ const BottomNavBar: React.FC<{ onHeightMeasured?: (height: number) => void }> = 
                         hapticFeedback.impactOccurred.ifAvailable("light");
                         navigate("/rating");
                     }}
-                    onMouseEnter={preloadRatingPage}
-                    onTouchStart={preloadRatingPage}
+                    onMouseEnter={() => preloadRatingPage()}
+                    onTouchStart={() => preloadRatingPage()}
                 >
                     <EmojiEventsIcon />
                 </Tabbar.Item>

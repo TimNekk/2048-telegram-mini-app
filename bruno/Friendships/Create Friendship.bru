@@ -1,0 +1,17 @@
+meta {
+  name: Create Friendship
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/friendships
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "friend_id": 12344
+  }
+}

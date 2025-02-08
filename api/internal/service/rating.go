@@ -8,8 +8,8 @@ import (
 )
 
 type RatingService interface {
-	GetDailyRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error)
-	GetTotalRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error)
+	GetDailyRating(ctx context.Context, limit int, userID int64, friendsOnly bool) ([]model.RatingPlace, error)
+	GetTotalRating(ctx context.Context, limit int, userID int64, friendsOnly bool) ([]model.RatingPlace, error)
 }
 
 type ratingService struct {
@@ -22,10 +22,10 @@ func NewRatingService(gameRepo repository.GameRepository) RatingService {
 	}
 }
 
-func (s *ratingService) GetDailyRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error) {
-	return s.gameRepo.GetDailyRating(ctx, limit, userID)
+func (s *ratingService) GetDailyRating(ctx context.Context, limit int, userID int64, friendsOnly bool) ([]model.RatingPlace, error) {
+	return s.gameRepo.GetDailyRating(ctx, limit, userID, friendsOnly)
 }
 
-func (s *ratingService) GetTotalRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error) {
-	return s.gameRepo.GetTotalRating(ctx, limit, userID)
+func (s *ratingService) GetTotalRating(ctx context.Context, limit int, userID int64, friendsOnly bool) ([]model.RatingPlace, error) {
+	return s.gameRepo.GetTotalRating(ctx, limit, userID, friendsOnly)
 }

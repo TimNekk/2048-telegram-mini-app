@@ -52,6 +52,12 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
+	// Create friendships table
+	log.Println("Creating friendships table...")
+	if _, err := tx.Exec(addFriendshipsTable); err != nil {
+		return err
+	}
+
 	// Commit the transaction
 	if err := tx.Commit(); err != nil {
 		return err
@@ -127,4 +133,19 @@ CREATE TRIGGER update_games_updated_at
     BEFORE UPDATE ON games
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+`
+
+const addFriendshipsTable = `
+CREATE TABLE IF NOT EXISTS friendships (
+    id BIGSERIAL PRIMARY KEY,
+    user1_id BIGINT NOT NULL,
+    user2_id BIGINT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (user1_id) REFERENCES users(id),
+    FOREIGN KEY (user2_id) REFERENCES users(id),
+    UNIQUE (user1_id, user2_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_friendships_user1_id ON friendships (user1_id);
+CREATE INDEX IF NOT EXISTS idx_friendships_user2_id ON friendships (user2_id);
 `

@@ -6,8 +6,8 @@ import { Cell, Divider, Section, Skeleton } from "@telegram-apps/telegram-ui";
 import React from "react";
 import useSWR, { preload } from "swr";
 
-export const preloadRatingSection = (type: "daily" | "total") => {
-    preload([ratingUrlEndpoint, type, ratingLength], getRating);
+export const preloadRatingSection = (type: "daily" | "total", scope: "global" | "friends") => {
+    preload([ratingUrlEndpoint, type, scope, ratingLength], getRating);
 };
 
 export const RatingSection: React.FC<{
@@ -15,12 +15,13 @@ export const RatingSection: React.FC<{
     footer: string;
     noDataText: string;
     type: "daily" | "total";
-}> = ({ title, footer, noDataText, type }) => {
+    scope: "global" | "friends";
+}> = ({ title, footer, noDataText, type, scope }) => {
     const {
         isLoading: isRatingLoading,
         error: ratingError,
         data: rating,
-    } = useSWR([ratingUrlEndpoint, type, ratingLength], getRating, {});
+    } = useSWR([ratingUrlEndpoint, type, scope, ratingLength], getRating, {});
 
     const initData = retrieveLaunchParams();
     const currentUserId = initData.initData?.user?.id;

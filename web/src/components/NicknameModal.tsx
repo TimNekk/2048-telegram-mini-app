@@ -15,14 +15,26 @@ export const NicknameModal: React.FC<{
 }> = ({ isOpen, setIsOpen }) => {
     const { data: me, mutate: mutateMe } = useSWR([usersUrlEndpoint], getMe);
 
-    const { mutate: mutateDailyRating } = useSWR(
-        [ratingUrlEndpoint, "daily", ratingLength],
+    const { mutate: mutateDailyGlobalRating } = useSWR(
+        [ratingUrlEndpoint, "daily", "global", ratingLength],
         getRating,
         {}
     );
 
-    const { mutate: mutateTotalRating } = useSWR(
-        [ratingUrlEndpoint, "total", ratingLength],
+    const { mutate: mutateTotalGlobalRating } = useSWR(
+        [ratingUrlEndpoint, "total", "global", ratingLength],
+        getRating,
+        {}
+    );
+
+    const { mutate: mutateTotalFriendsRating } = useSWR(
+        [ratingUrlEndpoint, "total", "friends", ratingLength],
+        getRating,
+        {}
+    );
+
+    const { mutate: mutateDailyFriendsRating } = useSWR(
+        [ratingUrlEndpoint, "daily", "friends", ratingLength],
         getRating,
         {}
     );
@@ -48,8 +60,10 @@ export const NicknameModal: React.FC<{
         try {
             await updateMe(usersUrlEndpoint, { nickname: nickname });
             await mutateMe();
-            await mutateDailyRating();
-            await mutateTotalRating();
+            await mutateDailyGlobalRating();
+            await mutateTotalGlobalRating();
+            await mutateDailyFriendsRating();
+            await mutateTotalFriendsRating();
             hapticFeedback.notificationOccurred.ifAvailable("success");
         } catch (error) {
             hapticFeedback.notificationOccurred.ifAvailable("error");

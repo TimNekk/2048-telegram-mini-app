@@ -55,6 +55,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 	rating.Use(customMiddleware.RequireInitData)
 	rating.GET("", s.ratingHandler.GetRating)
 
+	// Friendship routes
+	friendship := e.Group("/friendships")
+	friendship.Use(customMiddleware.TelegramAuth(s.botToken))
+	friendship.Use(customMiddleware.RequireInitData)
+	friendship.GET("", s.friendshipHandler.GetFriends)
+	friendship.POST("", s.friendshipHandler.CreateFriendship)
+	friendship.DELETE("", s.friendshipHandler.RemoveFriendship)
+
 	return e
 }
 

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"gitlab.platform.corp/magnitonline/mm/backend/ci-team/2048/api/internal/model"
 )
@@ -13,8 +14,8 @@ type GameRepository interface {
 	UpdateStatus(ctx context.Context, id int64, status model.GameStatus) error
 	UpdateScore(ctx context.Context, id int64, score int) error
 	GetUserStats(ctx context.Context, userID int64) (recordScore int, totalScore int, err error)
-	GetDailyRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error)
-	GetTotalRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error)
+	GetDailyRating(ctx context.Context, limit int, userID int64, friendsOnly bool) ([]model.RatingPlace, error)
+	GetTotalRating(ctx context.Context, limit int, userID int64, friendsOnly bool) ([]model.RatingPlace, error)
 }
 
 type gameRepository struct {
@@ -135,38 +136,55 @@ func (r *gameRepository) GetUserStats(ctx context.Context, userID int64) (record
 	return
 }
 
-func (r *gameRepository) GetDailyRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error) {
-	rows, err := r.db.QueryContext(ctx, `
+func (r *gameRepository) GetDailyRating(ctx context.Context, limit int, userID int64, friendsOnly bool) ([]model.RatingPlace, error) {
+	baseQuery := `
 		WITH daily_scores AS (
 			SELECT
 				g.user_id,
-				COALESCE(MAX(g.score),
-				0) AS score,
-				ROW_NUMBER() OVER (
-				ORDER BY COALESCE(MAX(g.score),
-				0) DESC) AS POSITION
+				COALESCE(MAX(g.score), 0) AS score,
+				ROW_NUMBER() OVER (ORDER BY COALESCE(MAX(g.score), 0) DESC) AS position
 			FROM
 				games g
 			WHERE
 				g.updated_at >= NOW() - INTERVAL '24 HOURS'
+				%s  -- Dynamic CTE filter
 			GROUP BY
 				g.user_id
 		)
 		SELECT
-            u.id,
+			u.id,
 			u.nickname,
 			ds.score,
 			ds.position
 		FROM
 			daily_scores ds
-		JOIN users u ON
-			u.id = ds.user_id
-		WHERE
-			ds.position <= $1
-			OR ds.user_id = $2
-	`, limit, userID)
+		JOIN users u ON u.id = ds.user_id
+		WHERE %s  -- Final filter
+		ORDER BY ds.score DESC
+	`
+
+	cteFilter := ""
+	finalFilter := "ds.position <= $1 OR ds.user_id = $2"
+
+	if friendsOnly {
+		// Add friend filtering at CTE level
+		cteFilter = `AND (
+			g.user_id = $2 OR EXISTS (
+				SELECT 1 FROM friendships f 
+				WHERE (f.user1_id = $2 AND f.user2_id = g.user_id)
+				OR (f.user2_id = $2 AND f.user1_id = g.user_id)
+			)
+		)`
+
+		// Simplify final filter to just position limit + user clause
+		finalFilter = "ds.position <= $1 OR ds.user_id = $2"
+	}
+
+	baseQuery = fmt.Sprintf(baseQuery, cteFilter, finalFilter)
+
+	rows, err := r.db.QueryContext(ctx, baseQuery, limit, userID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting daily rating: %w", err)
 	}
 	defer rows.Close()
 
@@ -174,46 +192,57 @@ func (r *gameRepository) GetDailyRating(ctx context.Context, limit int, userID i
 	for rows.Next() {
 		var place model.RatingPlace
 		if err := rows.Scan(&place.UserId, &place.Nickname, &place.Score, &place.Place); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error scanning daily rating row: %w", err)
 		}
 		places = append(places, place)
 	}
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-	return places, nil
+	return places, rows.Err()
 }
 
-func (r *gameRepository) GetTotalRating(ctx context.Context, limit int, userID int64) ([]model.RatingPlace, error) {
-	rows, err := r.db.QueryContext(ctx, `
+func (r *gameRepository) GetTotalRating(ctx context.Context, limit int, userID int64, friendsOnly bool) ([]model.RatingPlace, error) {
+	baseQuery := `
 		WITH overall_scores AS (
-SELECT
-	g.user_id,
-	COALESCE(SUM(g.score),
-	0) AS score,
-	ROW_NUMBER() OVER (
-	ORDER BY COALESCE(SUM(g.score),
-	0) DESC) AS POSITION
-FROM
-	games g
-GROUP BY
-	g.user_id
-)
-SELECT
-    u.id,
-	u.nickname,
-	os.score,
-	os.position
-FROM
-	overall_scores os
-JOIN users u ON
-	u.id = os.user_id
-WHERE
-	os.position <= $1
-	OR os.user_id = $2
-	`, limit, userID)
+			SELECT
+				g.user_id,
+				COALESCE(SUM(g.score), 0) AS score,
+				ROW_NUMBER() OVER (ORDER BY COALESCE(SUM(g.score), 0) DESC) AS position
+			FROM
+				games g
+			%s  -- Dynamic CTE filter
+			GROUP BY
+				g.user_id
+		)
+		SELECT
+			u.id,
+			u.nickname,
+			os.score,
+			os.position
+		FROM
+			overall_scores os
+		JOIN users u ON u.id = os.user_id
+		WHERE %s  -- Final filter
+		ORDER BY os.score DESC
+	`
+
+	cteFilter := ""
+	finalFilter := "os.position <= $1 OR os.user_id = $2"
+
+	if friendsOnly {
+		cteFilter = `WHERE 
+			g.user_id = $2 OR EXISTS (
+				SELECT 1 FROM friendships f 
+				WHERE (f.user1_id = $2 AND f.user2_id = g.user_id)
+				OR (f.user2_id = $2 AND f.user1_id = g.user_id)
+			)`
+
+		finalFilter = "os.position <= $1 OR os.user_id = $2"
+	}
+
+	baseQuery = fmt.Sprintf(baseQuery, cteFilter, finalFilter)
+
+	rows, err := r.db.QueryContext(ctx, baseQuery, limit, userID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting total rating: %w", err)
 	}
 	defer rows.Close()
 
@@ -221,12 +250,9 @@ WHERE
 	for rows.Next() {
 		var place model.RatingPlace
 		if err := rows.Scan(&place.UserId, &place.Nickname, &place.Score, &place.Place); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error scanning total rating row: %w", err)
 		}
 		places = append(places, place)
 	}
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-	return places, nil
+	return places, rows.Err()
 }

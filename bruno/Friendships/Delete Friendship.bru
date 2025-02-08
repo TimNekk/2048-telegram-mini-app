@@ -1,0 +1,17 @@
+meta {
+  name: Delete Friendship
+  type: http
+  seq: 3
+}
+
+delete {
+  url: http://localhost:8080/friendships
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "friend_id": 12344
+  }
+}
