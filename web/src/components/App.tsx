@@ -1,15 +1,18 @@
 import { useLaunchParams, miniApp, useSignal, viewport } from "@telegram-apps/sdk-react";
-import { AppRoot } from "@telegram-apps/telegram-ui";
+import { AppRoot, Snackbar } from "@telegram-apps/telegram-ui";
 import { Navigate, Route, Routes, HashRouter } from "react-router-dom";
 import { routes } from "@/navigation/routes.tsx";
 import GameProvider from "@/components/Game/context/game-context";
 import eruda from "eruda";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { addFriend } from "@/api/friendshipsApi";
+import { Friendship } from "@/models/friendship";
 
 export function App() {
     const lp = useLaunchParams();
     const isDark = useSignal(miniApp.isDark);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [newFriend, setNewFriend] = useState<Friendship | null>(null);
 
     useEffect(() => {
         const init = async () => {
@@ -23,10 +26,24 @@ export function App() {
         eruda.init();
 
         const handleScroll = () => {};
-
         const container = scrollContainerRef.current;
         container?.addEventListener("scroll", handleScroll);
 
+        // Check start param
+        if (lp.startParam?.startsWith("friend_")) {
+            const userId = lp.startParam.split("_")[1];
+            addFriend(parseInt(userId))
+                .then((friend) => {
+                    console.log(`Friend added: `, friend);
+                    setNewFriend(friend);
+                })
+                .catch((e) => {
+                    const ignoreCodes = [400, 409];
+                    if (!ignoreCodes.includes(e.response.status)) {
+                        console.log(`Failed to add friend: `, e);
+                    }
+                });
+        }
         return () => {
             container?.removeEventListener("scroll", handleScroll);
         };
@@ -62,6 +79,11 @@ export function App() {
                         </Routes>
                     </GameProvider>
                 </HashRouter>
+                {newFriend && (
+                    <Snackbar style={{ zIndex: 3 }} onClose={() => setNewFriend(null)}>
+                        Новый друг добавлен!
+                    </Snackbar>
+                )}
             </div>
         </AppRoot>
     );
