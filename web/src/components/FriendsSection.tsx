@@ -7,6 +7,7 @@ import { useState } from "react";
 import { friendshipsUrlEndpoint, getFriends, removeFriend } from "@/api/friendshipsApi";
 import { Skeleton } from "@telegram-apps/telegram-ui";
 import useSWR from "swr";
+import { hapticFeedback } from "@telegram-apps/sdk-react";
 
 export const preloadFriendsSection = () => {};
 
@@ -55,10 +56,22 @@ export const FriendsSection = () => {
                     >
                         Список друзей
                         {friends?.length !== 0 && !editMode && (
-                            <EditIcon fontSize="small" onClick={toggleEditMode} />
+                            <EditIcon
+                                fontSize="small"
+                                onClick={() => {
+                                    hapticFeedback.impactOccurred.ifAvailable("light");
+                                    toggleEditMode();
+                                }}
+                            />
                         )}
                         {friends?.length !== 0 && editMode && (
-                            <CheckIcon fontSize="small" onClick={toggleEditMode} />
+                            <CheckIcon
+                                fontSize="small"
+                                onClick={() => {
+                                    hapticFeedback.impactOccurred.ifAvailable("light");
+                                    toggleEditMode();
+                                }}
+                            />
                         )}
                     </Stack>
                 </Section.Header>
@@ -78,6 +91,7 @@ export const FriendsSection = () => {
                                 <CloseIcon
                                     fontSize="small"
                                     onClick={() => {
+                                        hapticFeedback.impactOccurred.ifAvailable("light");
                                         removeFriend(friend.id).then(() => {
                                             mutateFriends();
                                         });

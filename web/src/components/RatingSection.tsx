@@ -57,6 +57,7 @@ export const RatingSection: React.FC<{
                                             </span>
                                         }
                                         subtitle={`${formatNumberWithSpaces(rating.score)} очков`}
+                                        interactiveAnimation="opacity"
                                     >
                                         <span
                                             style={{

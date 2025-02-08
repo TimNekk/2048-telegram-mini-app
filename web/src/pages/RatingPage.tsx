@@ -7,6 +7,7 @@ import { TabsItem } from "@telegram-apps/telegram-ui/dist/components/Navigation/
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { defaultRatingScope } from "@/constants";
+import { hapticFeedback } from "@telegram-apps/sdk-react";
 
 export const preloadRatingPage = (scope: "friends" | "global" = defaultRatingScope) => {
     prelaodProfileSection();
@@ -25,15 +26,21 @@ const RatingPage: React.FC = () => {
 
                 <TabsList>
                     <TabsItem
-                        onClick={() => setScope("global")}
+                        onClick={() => {
+                            hapticFeedback.selectionChanged.ifAvailable();
+                            setScope("global");
+                        }}
                         selected={scope === "global"}
-                        onMouseEnter={() => preloadRatingPage("friends")}
-                        onTouchStart={() => preloadRatingPage("friends")}
+                        onMouseEnter={() => preloadRatingPage("global")}
+                        onTouchStart={() => preloadRatingPage("global")}
                     >
                         Весь мир
                     </TabsItem>
                     <TabsItem
-                        onClick={() => setScope("friends")}
+                        onClick={() => {
+                            hapticFeedback.selectionChanged.ifAvailable();
+                            setScope("friends");
+                        }}
                         selected={scope === "friends"}
                         onMouseEnter={() => preloadRatingPage("friends")}
                         onTouchStart={() => preloadRatingPage("friends")}
@@ -64,7 +71,13 @@ const RatingPage: React.FC = () => {
 
                 {scope === "friends" && (
                     <Section>
-                        <ButtonCell before={<GroupIcon />} onClick={() => navigate("/friends")}>
+                        <ButtonCell
+                            before={<GroupIcon />}
+                            onClick={() => {
+                                hapticFeedback.impactOccurred.ifAvailable("medium");
+                                navigate("/friends");
+                            }}
+                        >
                             Список друзей
                         </ButtonCell>
                     </Section>
