@@ -27,8 +27,8 @@ const RatingPage: React.FC = () => {
                     <TabsItem
                         onClick={() => setScope("global")}
                         selected={scope === "global"}
-                        onMouseEnter={() => preloadRatingPage("friends")}
-                        onTouchStart={() => preloadRatingPage("friends")}
+                        onMouseEnter={() => preloadRatingPage("global")}
+                        onTouchStart={() => preloadRatingPage("global")}
                     >
                         Весь мир
                     </TabsItem>
