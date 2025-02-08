@@ -5,11 +5,14 @@ const ratingApi = apiClient;
 
 export const ratingUrlEndpoint = "/rating";
 
-export const getRating = async ([url, type, limit]: [string, "daily" | "total", number]): Promise<
-    RatingPlace[]
-> => {
+export const getRating = async ([url, type, scope, limit]: [
+    string,
+    "daily" | "total",
+    "global" | "friends",
+    number
+]): Promise<RatingPlace[]> => {
     const response = await ratingApi.get<RatingPlace[]>(url, {
-        params: { limit: limit, type: type },
+        params: { limit: limit, type: type, scope: scope },
     });
     return response.data;
 };
