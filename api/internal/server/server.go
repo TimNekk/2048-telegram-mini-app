@@ -24,6 +24,7 @@ type Server struct {
 	userHandler          *handler.UserHandler
 	statsHandler         *handler.StatsHandler
 	ratingHandler        *handler.RatingHandler
+	friendshipHandler    *handler.FriendshipHandler
 }
 
 func NewServer() *http.Server {
@@ -34,6 +35,7 @@ func NewServer() *http.Server {
 	gameRepo := repository.NewGameRepository(db.GetDB())
 	promocodeRepo := repository.NewPromocodeRepository(db.GetDB())
 	promocodeTypeRepo := repository.NewPromocodeTypeRepository(db.GetDB())
+	friendshipRepo := repository.NewFriendshipRepository(db.GetDB())
 
 	// Initialize services
 	gameService := service.NewGameService(userRepo, gameRepo)
@@ -42,6 +44,7 @@ func NewServer() *http.Server {
 	statsService := service.NewStatsService(gameRepo)
 	userService := service.NewUserService(userRepo)
 	ratingService := service.NewRatingService(gameRepo)
+	friendshipService := service.NewFriendshipService(friendshipRepo, userRepo)
 
 	server := &Server{
 		port:                 8080,
@@ -53,6 +56,7 @@ func NewServer() *http.Server {
 		statsHandler:         handler.NewStatsHandler(statsService),
 		userHandler:          handler.NewUserHandler(userService),
 		ratingHandler:        handler.NewRatingHandler(ratingService),
+		friendshipHandler:    handler.NewFriendshipHandler(friendshipService),
 	}
 
 	// Declare Server config
