@@ -58,6 +58,12 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
+	// Add order constraint to friendships table
+	log.Println("Adding order constraint to friendships table...")
+	if _, err := tx.Exec(addFriendshipsOrderConstraint); err != nil {
+		return err
+	}
+
 	// Commit the transaction
 	if err := tx.Commit(); err != nil {
 		return err
@@ -148,4 +154,19 @@ CREATE TABLE IF NOT EXISTS friendships (
 
 CREATE INDEX IF NOT EXISTS idx_friendships_user1_id ON friendships (user1_id);
 CREATE INDEX IF NOT EXISTS idx_friendships_user2_id ON friendships (user2_id);
+`
+
+const addFriendshipsOrderConstraint = `
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM pg_constraint 
+        WHERE conname = 'check_user_order'
+    ) THEN
+        ALTER TABLE friendships 
+        ADD CONSTRAINT check_user_order 
+        CHECK (user1_id < user2_id);
+    END IF;
+END $$;
 `

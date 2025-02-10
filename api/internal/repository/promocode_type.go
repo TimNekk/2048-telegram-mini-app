@@ -31,7 +31,7 @@ func (r *promocodeTypeRepository) GetAll(ctx context.Context) ([]model.Promocode
 	}
 	defer rows.Close()
 
-	types := make([]model.PromocodeType, 0)
+	types := []model.PromocodeType{}
 	for rows.Next() {
 		var t model.PromocodeType
 		if err := rows.Scan(&t.ID, &t.Discount, &t.MinOrder, &t.Score, &t.Type, &t.CreatedAt); err != nil {
