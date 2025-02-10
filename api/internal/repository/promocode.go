@@ -34,7 +34,7 @@ func (r *promocodeRepository) GetUserPromocodes(ctx context.Context, userID int6
 	}
 	defer rows.Close()
 
-	promocodes := make([]model.Promocode, 0)
+	promocodes := []model.Promocode{}
 	for rows.Next() {
 		var p model.Promocode
 		p.Type = &model.PromocodeType{}

@@ -167,16 +167,14 @@ func (r *gameRepository) GetDailyRating(ctx context.Context, limit int, userID i
 	finalFilter := "ds.position <= $1 OR ds.user_id = $2"
 
 	if friendsOnly {
-		// Add friend filtering at CTE level
 		cteFilter = `AND (
-			g.user_id = $2 OR EXISTS (
-				SELECT 1 FROM friendships f 
-				WHERE (f.user1_id = $2 AND f.user2_id = g.user_id)
-				OR (f.user2_id = $2 AND f.user1_id = g.user_id)
-			)
-		)`
+            g.user_id = $2 OR EXISTS (
+                SELECT 1 FROM friendships f 
+                WHERE f.user1_id = LEAST($2, g.user_id)
+                AND f.user2_id = GREATEST($2, g.user_id)
+            )
+        )`
 
-		// Simplify final filter to just position limit + user clause
 		finalFilter = "ds.position <= $1 OR ds.user_id = $2"
 	}
 
@@ -188,7 +186,7 @@ func (r *gameRepository) GetDailyRating(ctx context.Context, limit int, userID i
 	}
 	defer rows.Close()
 
-	var places []model.RatingPlace
+	places := []model.RatingPlace{}
 	for rows.Next() {
 		var place model.RatingPlace
 		if err := rows.Scan(&place.UserId, &place.Nickname, &place.Score, &place.Place); err != nil {
@@ -229,11 +227,11 @@ func (r *gameRepository) GetTotalRating(ctx context.Context, limit int, userID i
 
 	if friendsOnly {
 		cteFilter = `WHERE 
-			g.user_id = $2 OR EXISTS (
-				SELECT 1 FROM friendships f 
-				WHERE (f.user1_id = $2 AND f.user2_id = g.user_id)
-				OR (f.user2_id = $2 AND f.user1_id = g.user_id)
-			)`
+            g.user_id = $2 OR EXISTS (
+                SELECT 1 FROM friendships f 
+                WHERE f.user1_id = LEAST($2, g.user_id)
+                AND f.user2_id = GREATEST($2, g.user_id)
+            )`
 
 		finalFilter = "os.position <= $1 OR os.user_id = $2"
 	}
@@ -246,7 +244,7 @@ func (r *gameRepository) GetTotalRating(ctx context.Context, limit int, userID i
 	}
 	defer rows.Close()
 
-	var places []model.RatingPlace
+	places := []model.RatingPlace{}
 	for rows.Next() {
 		var place model.RatingPlace
 		if err := rows.Scan(&place.UserId, &place.Nickname, &place.Score, &place.Place); err != nil {

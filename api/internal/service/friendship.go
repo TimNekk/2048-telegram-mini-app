@@ -84,13 +84,6 @@ func (s *friendshipService) RemoveFriendship(
 	user1ID,
 	user2ID int64,
 ) error {
-	_, err1 := s.userRepo.GetByID(ctx, user1ID)
-	_, err2 := s.userRepo.GetByID(ctx, user2ID)
-
-	if err1 != nil || err2 != nil {
-		return fmt.Errorf("one or both users do not exist")
-	}
-
 	err := s.friendshipRepo.RemoveFriendship(ctx, user1ID, user2ID)
 	if err != nil {
 		if err.Error() == "friendship not found" {

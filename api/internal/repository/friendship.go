@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"strings"
 
 	"gitlab.platform.corp/magnitonline/mm/backend/ci-team/2048/api/internal/model"
@@ -30,11 +31,15 @@ func (r *friendshipRepository) CreateFriendship(
 	user1ID,
 	user2ID int64,
 ) (*model.Friendship, error) {
+	if user1ID > user2ID {
+		user1ID, user2ID = user2ID, user1ID
+	}
+
 	query := `
-		INSERT INTO friendships (user1_id, user2_id, created_at)
-		VALUES ($1, $2, NOW())
-		RETURNING id, user1_id, user2_id, created_at
-	`
+        INSERT INTO friendships (user1_id, user2_id, created_at)
+        VALUES ($1, $2, NOW())
+        RETURNING id, user1_id, user2_id, created_at
+    `
 
 	friendship := &model.Friendship{}
 	err := r.db.QueryRowContext(ctx, query, user1ID, user2ID).Scan(
@@ -50,10 +55,8 @@ func (r *friendshipRepository) CreateFriendship(
 			strings.Contains(err.Error(), "Duplicate entry") {
 			return nil, ErrDuplicateFriendship
 		}
-
 		return nil, fmt.Errorf("error creating friendship: %w", err)
 	}
-
 	return friendship, nil
 }
 
@@ -62,11 +65,14 @@ func (r *friendshipRepository) GetFriends(
 	userID int64,
 ) ([]*model.User, error) {
 	query := `
-		SELECT u.id, u.username, u.first_name, u.last_name, u.nickname, u.created_at
-		FROM users u
-		INNER JOIN friendships f ON (u.id = f.user2_id AND f.user1_id = $1) OR (u.id = f.user1_id AND f.user2_id = $1)
-		WHERE u.id != $1 -- Exclude the user themselves
-	`
+        SELECT u.id, u.username, u.first_name, u.last_name, u.nickname, u.created_at
+        FROM friendships f
+        INNER JOIN users u ON u.id = CASE
+            WHEN f.user1_id = $1 THEN f.user2_id
+            ELSE f.user1_id
+        END
+        WHERE $1 IN (f.user1_id, f.user2_id)
+    `
 
 	rows, err := r.db.QueryContext(ctx, query, userID)
 	if err != nil {
@@ -74,7 +80,7 @@ func (r *friendshipRepository) GetFriends(
 	}
 	defer rows.Close()
 
-	var friends []*model.User
+	var friends []*model.User = []*model.User{}
 	for rows.Next() {
 		friend := &model.User{}
 		err := rows.Scan(
@@ -95,10 +101,6 @@ func (r *friendshipRepository) GetFriends(
 		return nil, fmt.Errorf("error iterating friend rows: %w", err)
 	}
 
-	if len(friends) == 0 {
-		return []*model.User{}, nil
-	}
-
 	return friends, nil
 }
 
@@ -107,23 +109,19 @@ func (r *friendshipRepository) RemoveFriendship(
 	user1ID,
 	user2ID int64,
 ) error {
+	if user1ID > user2ID {
+		user1ID, user2ID = user2ID, user1ID
+	}
+
 	query := `
-		DELETE FROM friendships
-		WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)
-	`
+        DELETE FROM friendships
+        WHERE user1_id = $1 AND user2_id = $2
+    `
 
-	result, err := r.db.ExecContext(ctx, query, user1ID, user2ID)
+	_, err := r.db.ExecContext(ctx, query, user1ID, user2ID)
 	if err != nil {
+		log.Println(err)
 		return fmt.Errorf("error removing friendship: %w", err)
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("error getting rows affected: %w", err)
-	}
-
-	if rowsAffected == 0 {
-		return fmt.Errorf("friendship not found")
 	}
 
 	return nil
