@@ -3,7 +3,6 @@ import { AppRoot, Snackbar } from "@telegram-apps/telegram-ui";
 import { Navigate, Route, Routes, HashRouter } from "react-router-dom";
 import { routes } from "@/navigation/routes.tsx";
 import GameProvider from "@/components/Game/context/game-context";
-import eruda from "eruda";
 import { useEffect, useRef, useState } from "react";
 import { addFriend } from "@/api/friendshipsApi";
 import { Friendship } from "@/models/friendship";
@@ -22,8 +21,6 @@ export function App() {
             }
         };
         init();
-
-        eruda.init();
 
         const handleScroll = () => {};
         const container = scrollContainerRef.current;
